@@ -2,11 +2,13 @@ import { Annotation, StateGraph, START, END } from '@langchain/langgraph';
 import { HumanMessage } from '@langchain/core/messages';
 import { createClient }  from '@supabase/supabase-js';
 import { KRGlobalState, type KRGlobalStateType, type TaskType } from './state';
-import { zoroNode }   from './agents/zoro';
-import { namiNode }   from './agents/nami';
-import { luffyNode }  from './agents/luffy';
-import { killuaNode } from './agents/killua';
-import { itachiNode } from './agents/itachi';
+import { zoroNode }      from './agents/zoro';
+import { namiNode }      from './agents/nami';
+import { luffyNode }     from './agents/luffy';
+import { killuaNode }    from './agents/killua';
+import { itachiNode }    from './agents/itachi';
+import { tsunadeNode }   from './agents/tsunade';
+import { hashiramaNode } from './agents/hashirama';
 
 // ── Routing ───────────────────────────────────────────────────────────────────
 
@@ -16,6 +18,8 @@ const TASK_AGENT: Record<TaskType, string> = {
   email:        'luffy',
   prospecting:  'killua',
   marketing:    'itachi',
+  finance:      'tsunade',
+  supervisor:   'hashirama',
 };
 
 // ── Supervisor node ───────────────────────────────────────────────────────────
@@ -58,19 +62,25 @@ const graph = new StateGraph(KRGlobalState)
   .addNode('luffy',      luffyNode)
   .addNode('killua',     killuaNode)
   .addNode('itachi',     itachiNode)
+  .addNode('tsunade',    tsunadeNode)
+  .addNode('hashirama',  hashiramaNode)
   .addEdge(START, 'supervisor')
   .addConditionalEdges('supervisor', selectAgent, {
-    zoro:   'zoro',
-    nami:   'nami',
-    luffy:  'luffy',
-    killua: 'killua',
-    itachi: 'itachi',
+    zoro:      'zoro',
+    nami:      'nami',
+    luffy:     'luffy',
+    killua:    'killua',
+    itachi:    'itachi',
+    tsunade:   'tsunade',
+    hashirama: 'hashirama',
   })
-  .addEdge('zoro',   END)
-  .addEdge('nami',   END)
-  .addEdge('luffy',  END)
-  .addEdge('killua', END)
-  .addEdge('itachi', END);
+  .addEdge('zoro',      END)
+  .addEdge('nami',      END)
+  .addEdge('luffy',     END)
+  .addEdge('killua',    END)
+  .addEdge('itachi',    END)
+  .addEdge('tsunade',   END)
+  .addEdge('hashirama', END);
 
 export const hashirama = graph.compile();
 
