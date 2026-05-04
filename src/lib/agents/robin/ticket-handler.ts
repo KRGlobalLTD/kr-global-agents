@@ -100,7 +100,7 @@ async function classifyTicket(input: TicketInput): Promise<ClassificationResult>
       Authorization:  `Bearer ${process.env.OPENROUTER_API_KEY}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': 'https://kr-global.com',
-      'X-Title':      'ROBIN — KR Global',
+      'X-Title':      'ROBIN - KR Global',
     },
     body: JSON.stringify({
       model:           'google/gemini-2.0-flash-001',
@@ -183,7 +183,7 @@ export async function createTicket(input: TicketInput): Promise<Ticket> {
     agent_name: 'ROBIN',
     level:      classification.priority === 'critical' ? 'URGENT' : 'INFO',
     message:
-      `Ticket ${ticketNumber} créé (${classification.category}, ${classification.priority}) — ` +
+      `Ticket ${ticketNumber} créé (${classification.category}, ${classification.priority}) - ` +
       `${input.from_email} : "${classification.summary}"`,
   });
 

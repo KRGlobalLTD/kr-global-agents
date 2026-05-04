@@ -122,7 +122,7 @@ async function callGemini(
       Authorization:  `Bearer ${process.env.OPENROUTER_API_KEY}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': 'https://kr-global.com',
-      'X-Title':      'CHOPPER — KR Global',
+      'X-Title':      'CHOPPER - KR Global',
     },
     body: JSON.stringify({
       model:           'google/gemini-2.0-flash-001',

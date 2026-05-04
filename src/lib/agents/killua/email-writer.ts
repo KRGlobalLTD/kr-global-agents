@@ -93,7 +93,7 @@ export async function writeOutreachEmail(
       Authorization:  `Bearer ${process.env.OPENROUTER_API_KEY}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': 'https://kr-global.com',
-      'X-Title':      'KILLUA — KR Global',
+      'X-Title':      'KILLUA - KR Global',
     },
     body: JSON.stringify({
       model:           'anthropic/claude-sonnet-4-5',
@@ -124,11 +124,11 @@ export async function writeOutreachEmail(
 
   const subject = typeof parsed.subject === 'string' && parsed.subject.length > 0
     ? parsed.subject
-    : `KR Global Solutions — ${type === 'initial' ? 'Collaboration' : 'Suite de notre échange'}`;
+    : `KR Global Solutions - ${type === 'initial' ? 'Collaboration' : 'Suite de notre échange'}`;
 
   const html = typeof parsed.html === 'string' && parsed.html.length > 0
     ? parsed.html
-    : `<p>Bonjour ${prospect.firstName},</p><p>Message généré — contenu indisponible.</p>`;
+    : `<p>Bonjour ${prospect.firstName},</p><p>Message généré - contenu indisponible.</p>`;
 
   await supabase.from('alerts').insert({
     agent_name: 'KILLUA',

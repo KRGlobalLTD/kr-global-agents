@@ -81,7 +81,7 @@ async function classifyMention(
       Authorization:  `Bearer ${process.env.OPENROUTER_API_KEY}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': 'https://kr-global.com',
-      'X-Title':      'SANJI — KR Global',
+      'X-Title':      'SANJI - KR Global',
     },
     body: JSON.stringify({
       model:           'google/gemini-2.0-flash-001',
@@ -138,7 +138,7 @@ async function alertSlack(params: {
   const label    = params.opportunite ? 'OPPORTUNITÉ détectée' : 'Mention négative signalée';
 
   const text =
-    `${icon} *SANJI — ${label}*\n` +
+    `${icon} *SANJI - ${label}*\n` +
     `Plateforme : ${params.plateforme}\n` +
     `Auteur : ${params.auteur}\n` +
     `Commentaire : "${params.contenu.slice(0, 200)}"\n` +

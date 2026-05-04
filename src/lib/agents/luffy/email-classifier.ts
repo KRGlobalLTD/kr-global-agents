@@ -83,7 +83,7 @@ async function callOpenRouter(email: IncomingEmail): Promise<ClassificationResul
       Authorization:  `Bearer ${process.env.OPENROUTER_API_KEY}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': 'https://kr-global.com',
-      'X-Title':      'LUFFY — KR Global',
+      'X-Title':      'LUFFY - KR Global',
     },
     body: JSON.stringify({
       model: 'google/gemini-2.0-flash-001',

@@ -54,17 +54,17 @@ async function fetchContentFromDb(contentId: string): Promise<ContentRow> {
 
 const PLATFORM_GUIDES: Record<Platform, string> = {
   linkedin: (
-    'LinkedIn — ton B2B professionnel, 1 200 caractères max, ' +
+    'LinkedIn - ton B2B professionnel, 1 200 caractères max, ' +
     '3 à 5 hashtags en fin de texte, pas d\'excès d\'emojis, ' +
     'structure : accroche → valeur → CTA.'
   ),
   instagram: (
-    'Instagram — ton engageant et visuel, 2 200 caractères max, ' +
+    'Instagram - ton engageant et visuel, 2 200 caractères max, ' +
     'emojis bienvenus, 10 à 15 hashtags en fin de légende, ' +
     'structure : phrase d\'accroche → histoire → hashtags.'
   ),
   tiktok: (
-    'TikTok — ton décontracté et percutant, 150 caractères max, ' +
+    'TikTok - ton décontracté et percutant, 150 caractères max, ' +
     'hook fort en première ligne, langage tendance, ' +
     '3 à 5 hashtags pertinents, pensé pour être lu en vidéo.'
   ),
@@ -98,7 +98,7 @@ async function adaptForPlatform(
       Authorization:  `Bearer ${process.env.OPENROUTER_API_KEY}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': 'https://kr-global.com',
-      'X-Title':      'SANJI — KR Global',
+      'X-Title':      'SANJI - KR Global',
     },
     body: JSON.stringify({
       model:           'google/gemini-2.0-flash-001',
@@ -212,7 +212,7 @@ async function publishToInstagram(
     ? `${texteAdapte}\n\n${hashtags.map(h => `#${h}`).join(' ')}`
     : texteAdapte;
 
-  // Étape 1 — Créer le conteneur média
+  // Étape 1 - Créer le conteneur média
   const containerParams = new URLSearchParams({
     image_url:    mediaUrl,
     caption,
@@ -231,7 +231,7 @@ async function publishToInstagram(
 
   const container = (await containerRes.json()) as InstagramContainerResponse;
 
-  // Étape 2 — Publier le conteneur
+  // Étape 2 - Publier le conteneur
   const publishParams = new URLSearchParams({
     creation_id:  container.id,
     access_token: token,
@@ -342,7 +342,7 @@ export async function publishContent(input: PublishInput): Promise<PublishResult
       } else if (plateforme === 'instagram') {
         postId = await publishToInstagram(adapted.texte, adapted.hashtags, input.mediaUrl);
       } else {
-        // TikTok — contenu adapté enregistré pour publication manuelle
+        // TikTok - contenu adapté enregistré pour publication manuelle
         statut = 'planifie';
       }
 

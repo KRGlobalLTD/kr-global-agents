@@ -21,7 +21,7 @@ interface OpenRouterResponse {
 // ---- Base de connaissance KR Global ----
 
 const KR_KNOWLEDGE_BASE =
-  `KR Global Solutions Ltd — Agence IA & Digital (Londres, UK)\n\n` +
+  `KR Global Solutions Ltd - Agence IA & Digital (Londres, UK)\n\n` +
   `Services proposés :\n` +
   `- Agents IA sur mesure (prospection, support, comptabilité, marketing, réseaux sociaux)\n` +
   `- Développement web & mobile (Next.js, React Native, TypeScript)\n` +
@@ -37,7 +37,7 @@ const KR_KNOWLEDGE_BASE =
   `- "Quels délais ?" → Agent IA : 2-4 semaines. App complète : 4-8 semaines\n` +
   `- "Comment démarrer ?" → Répondre à cet email ou appeler notre équipe\n` +
   `- "Puis-je modifier mon projet ?" → Oui, via notre processus d'évolution contractuelle\n` +
-  `- "Avez-vous une démo ?" → Oui, sur rendez-vous — répondre à cet email`;
+  `- "Avez-vous une démo ?" → Oui, sur rendez-vous - répondre à cet email`;
 
 // ---- Prompt génération de réponse ----
 
@@ -80,7 +80,7 @@ async function generateResponse(ticket: Ticket): Promise<AutoResponseResult> {
       Authorization:  `Bearer ${process.env.OPENROUTER_API_KEY}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': 'https://kr-global.com',
-      'X-Title':      'ROBIN — KR Global',
+      'X-Title':      'ROBIN - KR Global',
     },
     body: JSON.stringify({
       model:           'google/gemini-2.0-flash-001',
@@ -223,7 +223,7 @@ export async function respondToTicket(ticketId: string): Promise<void> {
   if (shouldEscalate) {
     await escalateTicket(
       ticketId,
-      generated.escalation_reason || `Priorité ${ticket.priority} — intervention humaine requise`
+      generated.escalation_reason || `Priorité ${ticket.priority} - intervention humaine requise`
     );
   }
 }
@@ -246,7 +246,7 @@ export async function escalateTicket(ticketId: string, reason?: string): Promise
     await supabase.from('alerts').insert({
       agent_name: 'ROBIN',
       level:      'WARNING',
-      message:    `KARIM_EMAIL non configuré — ticket ${ticket.ticket_number} non escaladé`,
+      message:    `KARIM_EMAIL non configuré - ticket ${ticket.ticket_number} non escaladé`,
     });
     return;
   }
@@ -265,7 +265,7 @@ export async function escalateTicket(ticketId: string, reason?: string): Promise
     <head><meta charset="UTF-8"></head>
     <body style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;color:#333;">
       <div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:6px;padding:12px 16px;margin-bottom:20px;">
-        <strong>⚡ Ticket escaladé — Action requise</strong>
+        <strong>⚡ Ticket escaladé - Action requise</strong>
       </div>
 
       <table style="width:100%;border-collapse:collapse;font-size:14px;">
@@ -299,7 +299,7 @@ export async function escalateTicket(ticketId: string, reason?: string): Promise
     from:    FROM,
     replyTo: ticket.from_email,
     to:      karimEmail,
-    subject: `[ESCALADE ${priorityLabel[ticket.priority] ?? ticket.priority}] ${ticket.ticket_number} — ${ticket.subject}`,
+    subject: `[ESCALADE ${priorityLabel[ticket.priority] ?? ticket.priority}] ${ticket.ticket_number} - ${ticket.subject}`,
     html,
   });
 
@@ -318,7 +318,7 @@ export async function escalateTicket(ticketId: string, reason?: string): Promise
   await supabase.from('alerts').insert({
     agent_name: 'ROBIN',
     level:      'URGENT',
-    message:    `Ticket ${ticket.ticket_number} escaladé à Karim (${karimEmail}) — ${escalationReason}`,
+    message:    `Ticket ${ticket.ticket_number} escaladé à Karim (${karimEmail}) - ${escalationReason}`,
   });
 }
 
