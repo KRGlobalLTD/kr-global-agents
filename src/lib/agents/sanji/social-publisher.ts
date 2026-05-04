@@ -101,7 +101,7 @@ async function adaptForPlatform(
       'X-Title':      'SANJI — KR Global',
     },
     body: JSON.stringify({
-      model:           'google/gemini-2.0-flash',
+      model:           'google/gemini-2.0-flash-001',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user',   content: userPrompt   },

@@ -45,14 +45,14 @@ interface OpenRouterResponse {
 
 const MODEL_MAP: Record<ContentType, string> = {
   article:   'moonshotai/kimi-k2',
-  post:      'google/gemini-2.0-flash',
+  post:      'google/gemini-2.0-flash-001',
   strategie: 'anthropic/claude-sonnet-4-5',
 };
 
 // Coût estimé pour 1 000 tokens (en EUR, approximatif)
 const COST_PER_1K: Record<string, { input: number; output: number }> = {
   'moonshotai/kimi-k2':          { input: 0.0010, output: 0.0030 },
-  'google/gemini-2.0-flash':     { input: 0.0001, output: 0.0004 },
+  'google/gemini-2.0-flash-001':     { input: 0.0001, output: 0.0004 },
   'anthropic/claude-sonnet-4-5': { input: 0.0015, output: 0.0075 },
 };
 

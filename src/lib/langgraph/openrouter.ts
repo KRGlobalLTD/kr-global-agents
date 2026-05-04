@@ -12,7 +12,7 @@ export interface OpenRouterResponse {
   };
 }
 
-const DEFAULT_MODEL = 'google/gemini-2.0-flash';
+const DEFAULT_MODEL = 'google/gemini-2.0-flash-001';
 
 export async function callOpenRouter(
   messages: OpenRouterMessage[],

@@ -103,7 +103,7 @@ async function classifyTicket(input: TicketInput): Promise<ClassificationResult>
       'X-Title':      'ROBIN — KR Global',
     },
     body: JSON.stringify({
-      model:           'google/gemini-2.0-flash',
+      model:           'google/gemini-2.0-flash-001',
       messages: [
         { role: 'system', content: CLASSIFICATION_PROMPT },
         { role: 'user',   content: userPrompt            },

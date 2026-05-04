@@ -83,7 +83,7 @@ async function generateResponse(ticket: Ticket): Promise<AutoResponseResult> {
       'X-Title':      'ROBIN — KR Global',
     },
     body: JSON.stringify({
-      model:           'google/gemini-2.0-flash',
+      model:           'google/gemini-2.0-flash-001',
       messages: [
         { role: 'system', content: buildResponsePrompt(ticket) },
         { role: 'user',   content: userPrompt                  },
