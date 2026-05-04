@@ -20,7 +20,10 @@ CREATE TABLE IF NOT EXISTS content (
   statut           TEXT NOT NULL DEFAULT 'draft'
                      CHECK (statut IN ('draft', 'approuve', 'publie', 'archive')),
   modele           TEXT,
+  date_prevue      TIMESTAMPTZ,
   published_at     TIMESTAMPTZ,
+  likes            INTEGER NOT NULL DEFAULT 0,
+  partages         INTEGER NOT NULL DEFAULT 0,
   created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at       TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -73,3 +76,26 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER content_updated_at
   BEFORE UPDATE ON content
   FOR EACH ROW EXECUTE FUNCTION update_content_updated_at();
+
+-- ============================================================
+-- Migration v2 — à exécuter si la table content existe déjà
+-- ============================================================
+
+ALTER TABLE content ADD COLUMN IF NOT EXISTS date_prevue TIMESTAMPTZ;
+ALTER TABLE content ADD COLUMN IF NOT EXISTS likes       INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE content ADD COLUMN IF NOT EXISTS partages    INTEGER NOT NULL DEFAULT 0;
+CREATE INDEX IF NOT EXISTS idx_content_date_prevue ON content(date_prevue);
+
+-- Fonction RPC pour incrémenter likes/partages en atomique
+CREATE OR REPLACE FUNCTION increment_content_engagement(
+  p_content_id UUID,
+  p_likes      INTEGER DEFAULT 0,
+  p_partages   INTEGER DEFAULT 0
+) RETURNS VOID AS $$
+BEGIN
+  UPDATE content
+  SET likes    = likes    + p_likes,
+      partages = partages + p_partages
+  WHERE id = p_content_id;
+END;
+$$ LANGUAGE plpgsql;
