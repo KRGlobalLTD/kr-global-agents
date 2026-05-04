@@ -41,7 +41,6 @@ interface N8nWorkflowPayload {
   nodes:       N8nNode[];
   connections: Record<string, unknown>;
   settings:    Record<string, unknown>;
-  active:      boolean;
 }
 
 interface N8nCreatedWorkflow {
@@ -234,7 +233,6 @@ function buildWorkflow(cfg: {
     nodes:       [trigger, callNode, ifNode, okSlack, errSlack],
     connections,
     settings:    { executionOrder: 'v1' },
-    active:      false,
   };
 }
 
@@ -341,7 +339,7 @@ async function main() {
       const created = await n8nRequest<N8nCreatedWorkflow>('POST', '/workflows', workflow);
 
       // 2. Activer
-      await n8nRequest('PATCH', `/workflows/${created.id}`, { active: true });
+      await n8nRequest('POST', `/workflows/${created.id}/activate`);
 
       const url = `${N8N_URL}/workflow/${created.id}`;
       results.push({ name: workflow.name, id: created.id, url });
