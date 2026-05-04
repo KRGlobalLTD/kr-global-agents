@@ -97,7 +97,7 @@ async function callOpenRouter(
       Authorization:  `Bearer ${process.env.OPENROUTER_API_KEY}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': 'https://kr-global.com',
-      'X-Title':      'ITACHI — KR Global',
+      'X-Title':      'ITACHI - KR Global',
     },
     body: JSON.stringify({
       model,
