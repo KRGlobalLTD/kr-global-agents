@@ -1,6 +1,7 @@
 import { HumanMessage, AIMessage } from '@langchain/core/messages';
 import { type KRGlobalStateType } from '../state';
-import { callOpenRouter, systemPrompt } from '../openrouter';
+import { namiChain } from '@/lib/langchain/chains/nami-chain';
+import { getMemory, saveMemory } from '@/lib/langchain/memory';
 import { triggerOnboarding }   from '@/lib/agents/nami/onboarding-flow';
 import { runRetentionCycle }   from '@/lib/agents/nami/retention-sequence';
 
@@ -27,14 +28,15 @@ export async function namiNode(state: KRGlobalStateType): Promise<Partial<KRGlob
       }
 
       case 'generate_contract': {
-        // OpenRouter génère le contrat en markdown selon le brief
-        const contract = await callOpenRouter([
-          systemPrompt('NAMI', 'agent onboarding et gestion client'),
-          {
-            role:    'user',
-            content: `Génère un contrat de prestation de services pour :\n${JSON.stringify(input, null, 2)}\n\nInclure : parties, scope, tarif, conditions de paiement, clause de confidentialité, droit applicable (droit anglais).`,
-          },
-        ]);
+        const clientEmail = (input['client_email'] as string) ?? '';
+        const context     = await getMemory(clientEmail);
+        const contract    = await namiChain.invoke({
+          context,
+          input: `Génère un contrat de prestation de services pour :\n${JSON.stringify(input, null, 2)}\n\nInclure : parties, scope, tarif, conditions de paiement, clause de confidentialité, droit applicable (droit anglais).`,
+        });
+        if (clientEmail) {
+          await saveMemory(clientEmail, `Contrat généré : ${JSON.stringify(input).slice(0, 200)}`);
+        }
         result = { contract };
         break;
       }
@@ -46,10 +48,10 @@ export async function namiNode(state: KRGlobalStateType): Promise<Partial<KRGlob
       }
 
       default: {
-        const reasoning = await callOpenRouter([
-          systemPrompt('NAMI', 'agent onboarding et gestion client'),
-          { role: 'user', content: `Tâche : ${JSON.stringify(input)}` },
-        ]);
+        const reasoning = await namiChain.invoke({
+          context: '',
+          input:   `Tâche : ${JSON.stringify(input)}`,
+        });
         result = { reasoning };
       }
     }

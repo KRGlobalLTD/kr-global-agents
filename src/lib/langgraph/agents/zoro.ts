@@ -1,6 +1,6 @@
 import { HumanMessage, AIMessage } from '@langchain/core/messages';
 import { type KRGlobalStateType } from '../state';
-import { callOpenRouter, systemPrompt } from '../openrouter';
+import { zoroChain, zoroChainText } from '@/lib/langchain/chains/zoro-chain';
 import { trackExpense, getCurrentMonthCosts, type Entity, type TransactionCategory } from '@/lib/agents/zoro/cost-tracker';
 import { generateInvoice, type InvoiceData }   from '@/lib/agents/zoro/invoice-generator';
 import { generateMonthlyReport }               from '@/lib/agents/zoro/report-generator';
@@ -69,19 +69,19 @@ export async function zoroNode(state: KRGlobalStateType): Promise<Partial<KRGlob
 
       case 'sync_stripe': {
         const costs = await getCurrentMonthCosts(toEntity(input['entity']) ?? undefined);
-        const analysis = await callOpenRouter([
-          systemPrompt('ZORO', 'agent finance et comptabilité'),
-          { role: 'user', content: `Analyse ces coûts et identifie les écarts Stripe potentiels : ${JSON.stringify(costs)}` },
-        ], undefined, true);
+        const analysis = await zoroChain.invoke({
+          context: '',
+          input:   `Analyse ces coûts et identifie les écarts Stripe potentiels : ${JSON.stringify(costs)}`,
+        });
         result = { costs, analysis };
         break;
       }
 
       default: {
-        const reasoning = await callOpenRouter([
-          systemPrompt('ZORO', 'agent finance et comptabilité'),
-          { role: 'user', content: `Tâche : ${JSON.stringify(input)}` },
-        ], undefined, true);
+        const reasoning = await zoroChainText.invoke({
+          context: '',
+          input:   `Tâche : ${JSON.stringify(input)}`,
+        });
         result = { reasoning };
       }
     }

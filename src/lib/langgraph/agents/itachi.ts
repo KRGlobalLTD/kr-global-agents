@@ -1,5 +1,6 @@
 import { HumanMessage, AIMessage } from '@langchain/core/messages';
 import { type KRGlobalStateType } from '../state';
+import { getContentHistory, saveContentMemory } from '@/lib/langchain/memory';
 import { generateContent, type ContentType, type Longueur } from '@/lib/agents/itachi/content-generator';
 import { scheduleContent }  from '@/lib/agents/itachi/content-scheduler';
 import { trackMetrics }     from '@/lib/agents/itachi/performance-tracker';
@@ -36,16 +37,23 @@ export async function itachiNode(state: KRGlobalStateType): Promise<Partial<KRGl
         const ton        = (input['ton']        as string) ?? 'professionnel';
         const sujet      = (input['sujet']      as string) ?? '';
 
+        // Charger l'historique des contenus similaires depuis Qdrant
+        const contentHistory = await getContentHistory(sujet);
+
         const platformeCtx: Record<Plateforme, string> = {
           linkedin: '[LINKEDIN — 1500 chars max, storytelling pro, 3-5 hashtags]',
           twitter:  '[TWITTER/X — 280 chars max, accrocheur, 1-2 hashtags]',
           blog:     '[BLOG — 800-1200 mots, SEO-friendly, H1 + H2]',
         };
 
+        const historyNote = contentHistory
+          ? `\n\nContenus précédents sur ce sujet (éviter les répétitions) :\n${contentHistory}`
+          : '';
+
         const generated = await generateContent({
           marque:     'KR Global Solutions Ltd',
           type:       PLATEFORME_TYPE[plateforme],
-          sujet:      `${platformeCtx[plateforme]} ${sujet}`,
+          sujet:      `${platformeCtx[plateforme]} ${sujet}${historyNote}`,
           ton,
           langue,
           longueur:   PLATEFORME_LONGUEUR[plateforme],
@@ -75,12 +83,16 @@ export async function itachiNode(state: KRGlobalStateType): Promise<Partial<KRGl
           hashtags: generated.hashtags,
         });
 
+        // Sauvegarder le contenu dans Qdrant pour éviter les répétitions futures
+        await saveContentMemory(contentId, plateforme, generated.titre, generated.contenu);
+
         result = {
-          content_id: contentId,
-          titre:      generated.titre,
-          contenu:    generated.contenu,
-          hashtags:   generated.hashtags,
+          content_id:   contentId,
+          titre:        generated.titre,
+          contenu:      generated.contenu,
+          hashtags:     generated.hashtags,
           plateforme,
+          context_used: contentHistory.length > 0,
         };
         break;
       }

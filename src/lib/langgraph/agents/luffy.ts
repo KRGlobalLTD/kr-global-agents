@@ -1,6 +1,7 @@
 import { HumanMessage, AIMessage } from '@langchain/core/messages';
 import { type KRGlobalStateType } from '../state';
-import { callOpenRouter, systemPrompt } from '../openrouter';
+import { luffyChain, luffyChainJson } from '@/lib/langchain/chains/luffy-chain';
+import { getEmailHistory, saveEmailMemory } from '@/lib/langchain/memory';
 import { classifyEmail, type IncomingEmail } from '@/lib/agents/luffy/email-classifier';
 import { respondToEmail }                    from '@/lib/agents/luffy/email-responder';
 
@@ -35,29 +36,30 @@ export async function luffyNode(state: KRGlobalStateType): Promise<Partial<KRGlo
 
       case 'process_email': {
         const email          = buildEmail();
+        const emailHistory   = await getEmailHistory(email.fromEmail);
         const classification = await classifyEmail(email);
         const response       = await respondToEmail(email, classification);
-        result = { classification, response };
+        await saveEmailMemory(email.fromEmail, email.subject, email.body);
+        result = { classification, response, context_used: emailHistory.length > 0 };
         break;
       }
 
       case 'route_to_agent': {
-        const routing = await callOpenRouter([
-          systemPrompt('LUFFY', 'agent de traitement des emails entrants'),
-          {
-            role:    'user',
-            content: `Analyse cet email et détermine à quel agent le router parmi [ZORO, NAMI, KILLUA, ITACHI] :\n${JSON.stringify(input)}\n\nRetourne un JSON : {"agent": "...", "reason": "..."}`,
-          },
-        ], undefined, true);
-        result = { routing: JSON.parse(routing) };
+        const fromEmail = (input['from_email'] as string) ?? '';
+        const history   = await getEmailHistory(fromEmail);
+        const raw = await luffyChainJson.invoke({
+          context: history,
+          input:   `Analyse cet email et détermine à quel agent le router parmi [ZORO, NAMI, KILLUA, ITACHI] :\n${JSON.stringify(input)}\n\nRetourne un JSON : {"agent": "...", "reason": "..."}`,
+        });
+        result = { routing: JSON.parse(raw) };
         break;
       }
 
       default: {
-        const reasoning = await callOpenRouter([
-          systemPrompt('LUFFY', 'agent de traitement des emails entrants'),
-          { role: 'user', content: `Tâche : ${JSON.stringify(input)}` },
-        ]);
+        const reasoning = await luffyChain.invoke({
+          context: '',
+          input:   `Tâche : ${JSON.stringify(input)}`,
+        });
         result = { reasoning };
       }
     }

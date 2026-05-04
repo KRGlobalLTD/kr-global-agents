@@ -1,6 +1,7 @@
 import { HumanMessage, AIMessage } from '@langchain/core/messages';
 import { type KRGlobalStateType } from '../state';
-import { callOpenRouter, systemPrompt } from '../openrouter';
+import { killuaChainJson } from '@/lib/langchain/chains/killua-chain';
+import { getProspectContext, saveProspectMemory } from '@/lib/langchain/memory';
 import { findProspects, type ProspectSearchFilters } from '@/lib/agents/killua/prospect-finder';
 import { writeOutreachEmail, type ProspectProfile, type EmailType } from '@/lib/agents/killua/email-writer';
 import { runCampaignCycle, getCampaignStats }                        from '@/lib/agents/killua/campaign-manager';
@@ -46,13 +47,20 @@ export async function killuaNode(state: KRGlobalStateType): Promise<Partial<KRGl
           industry:  (input['industry']   as string | null) ?? null,
         };
         const emailType = (input['email_type'] as EmailType) ?? 'initial';
+        const context   = await getProspectContext(`${profile.company ?? ''} ${profile.industry ?? ''}`);
         const email     = await writeOutreachEmail(profile, emailType);
+
+        await saveProspectMemory(
+          profile.email,
+          profile.company ?? '',
+          `${profile.firstName} ${profile.lastName} — ${profile.jobTitle ?? ''} @ ${profile.company ?? ''}`,
+        );
 
         if (input['campaign_id']) {
           await runCampaignCycle(input['campaign_id'] as string);
         }
 
-        result = { email };
+        result = { email, context_used: context.length > 0 };
         break;
       }
 
@@ -65,10 +73,11 @@ export async function killuaNode(state: KRGlobalStateType): Promise<Partial<KRGl
       }
 
       default: {
-        const reasoning = await callOpenRouter([
-          systemPrompt('KILLUA', 'agent de prospection et d\'acquisition client'),
-          { role: 'user', content: `Tâche : ${JSON.stringify(input)}` },
-        ], undefined, true);
+        const context   = await getProspectContext(JSON.stringify(input));
+        const reasoning = await killuaChainJson.invoke({
+          context,
+          input: `Tâche : ${JSON.stringify(input)}`,
+        });
         result = { reasoning };
       }
     }
