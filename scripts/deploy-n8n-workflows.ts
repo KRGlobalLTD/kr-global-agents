@@ -299,6 +299,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
   }),
 
   buildWorkflow({
+    name:       'ROBIN — Rapport veille hebdomadaire (lundi 06h30)',
+    trigger:    scheduleTrigger(6, 30),
+    taskType:   'research',
+    taskInput:  { action: 'generate_report' },
+    slackUrl:   SLACK.general,
+    agentLabel: 'ROBIN / Rapport Veille',
+  }),
+
+  buildWorkflow({
+    name:       'ROBIN — Tendances IA quotidiennes (11h00)',
+    trigger:    scheduleTrigger(11, 0),
+    taskType:   'research',
+    taskInput:  { action: 'research_ai_trends' },
+    slackUrl:   SLACK.general,
+    agentLabel: 'ROBIN / Tendances IA',
+  }),
+
+  buildWorkflow({
     name:       'SANJI — Publication LinkedIn (09h00)',
     trigger:    scheduleTrigger(9, 0),
     taskType:   'social',
