@@ -16,6 +16,8 @@ export async function luffyNode(state: KRGlobalStateType): Promise<Partial<KRGlo
   try {
     let result: Record<string, unknown>;
 
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     function buildEmail(): IncomingEmail {
       return {
         messageId:  (input['message_id']  as string) ?? '',
@@ -29,13 +31,22 @@ export async function luffyNode(state: KRGlobalStateType): Promise<Partial<KRGlo
 
     switch (action) {
       case 'classify_email': {
-        const classification = await classifyEmail(buildEmail());
+        const email = buildEmail();
+        if (!EMAIL_RE.test(email.fromEmail)) {
+          result = { skipped: true, reason: 'email invalide, skip' };
+          break;
+        }
+        const classification = await classifyEmail(email);
         result = { classification };
         break;
       }
 
       case 'process_email': {
-        const email          = buildEmail();
+        const email = buildEmail();
+        if (!EMAIL_RE.test(email.fromEmail)) {
+          result = { skipped: true, reason: 'email invalide, skip' };
+          break;
+        }
         const emailHistory   = await getEmailHistory(email.fromEmail);
         const classification = await classifyEmail(email);
         const response       = await respondToEmail(email, classification);

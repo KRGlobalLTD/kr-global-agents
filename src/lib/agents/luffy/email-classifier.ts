@@ -166,9 +166,28 @@ export async function saveProspect(
   if (error) throw new Error(`Erreur sauvegarde prospect : ${error.message}`);
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 // ---- Point d'entrée principal ----
 
 export async function classifyEmail(email: IncomingEmail): Promise<ClassificationResult> {
+  // Inbox vide ou adresse invalide → skip sans appel OpenRouter
+  if (!EMAIL_RE.test(email.fromEmail)) {
+    await supabase.from('alerts').insert({
+      agent_name: 'LUFFY',
+      level:      'INFO',
+      message:    `classifyEmail skip — adresse invalide ou inbox vide : "${email.fromEmail}"`,
+    });
+    return {
+      classification: 'autre',
+      name:           null,
+      company:        null,
+      need:           null,
+      urgency:        'faible',
+      summary:        'Email ignoré — adresse invalide',
+    };
+  }
+
   const result = await callOpenRouter(email);
 
   await supabase.from('alerts').insert({

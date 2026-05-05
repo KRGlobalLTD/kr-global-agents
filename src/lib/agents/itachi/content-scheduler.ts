@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import type { ContentRequest, GeneratedContent } from './content-generator';
+import { toDbType } from './content-generator';
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -66,7 +67,7 @@ export async function scheduleContent(input: ScheduleInput): Promise<string> {
     .from('content')
     .insert({
       marque:           request.marque,
-      type:             request.type,
+      type:             toDbType(request.type),
       sujet:            request.sujet,
       ton:              request.ton,
       langue:           request.langue,

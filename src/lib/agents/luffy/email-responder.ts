@@ -9,8 +9,9 @@ const supabase = createClient(
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
-const FROM    = 'LUFFY · KR Global <agent@krglobalsolutionsltd.com>';
-const REPLYTO = 'agent@krglobalsolutionsltd.com';
+const FROM     = 'LUFFY · KR Global <agent@krglobalsolutionsltd.com>';
+const REPLYTO  = 'agent@krglobalsolutionsltd.com';
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // ---- Alerte Slack #prospects ----
 
@@ -129,6 +130,16 @@ export async function respondToEmail(
   email: IncomingEmail,
   result: ClassificationResult
 ): Promise<void> {
+  // Adresse invalide → skip silencieux (Resend rejetterait avec "Invalid to field")
+  if (!EMAIL_RE.test(email.fromEmail)) {
+    await supabase.from('alerts').insert({
+      agent_name: 'LUFFY',
+      level:      'INFO',
+      message:    `Email invalide, skip : fromEmail="${email.fromEmail}"`,
+    });
+    return;
+  }
+
   // Spam → aucune réponse
   if (result.classification === 'spam') {
     await supabase.from('alerts').insert({

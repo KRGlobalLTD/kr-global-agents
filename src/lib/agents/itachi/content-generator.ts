@@ -16,6 +16,21 @@ export type ContentType =
 
 export type Longueur = 'court' | 'moyen' | 'long';
 
+// content table CHECK (type IN ('article', 'post', 'strategie'))
+const DB_TYPE_MAP: Record<ContentType, 'article' | 'post' | 'strategie'> = {
+  article_seo:    'article',
+  script_podcast: 'article',
+  script_youtube: 'article',
+  post_linkedin:  'post',
+  post_instagram: 'post',
+  post_tiktok:    'post',
+  newsletter:     'post',
+};
+
+export function toDbType(type: ContentType): 'article' | 'post' | 'strategie' {
+  return DB_TYPE_MAP[type] ?? 'post';
+}
+
 export interface ContentRequest {
   marque:     string;
   type:       ContentType;
