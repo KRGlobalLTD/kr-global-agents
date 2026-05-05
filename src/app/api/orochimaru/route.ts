@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { runHealthCheck, getLatestToolStatuses } from '@/lib/agents/orochimaru/health-checker';
 import { runBackup, getLastBackup } from '@/lib/agents/orochimaru/backup-orchestrator';
+import { validateSecrets } from '@/lib/agents/orochimaru/secret-validator';
+import { sendHealthAlert, sendDailyHealthReport, sendSecretAlert, logInfrastructure } from '@/lib/agents/orochimaru/alert-manager';
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -16,7 +18,10 @@ function verifyInternalToken(request: NextRequest): boolean {
 
 type ActionPayload =
   | { action: 'health_check' }
-  | { action: 'backup' };
+  | { action: 'backup' }
+  | { action: 'validate_secrets' }
+  | { action: 'generate_health_report' }
+  | { action: 'send_alert'; message: string };
 
 // ---- POST ----
 
@@ -36,15 +41,45 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     switch (body.action) {
       case 'health_check': {
         const report = await runHealthCheck();
+        for (const r of report.results) {
+          await logInfrastructure(r.tool, r.status, r.responseTimeMs, r.error);
+        }
+        if (report.criticalDown.length > 0) await sendHealthAlert(report);
         return NextResponse.json({ success: true, report });
       }
 
       case 'backup': {
         const result = await runBackup();
-        return NextResponse.json({
-          success: result.success,
-          result,
-        }, { status: result.success ? 200 : 500 });
+        return NextResponse.json({ success: result.success, result }, { status: result.success ? 200 : 500 });
+      }
+
+      case 'validate_secrets': {
+        const result = await validateSecrets();
+        if (!result.allPresent) await sendSecretAlert(result);
+        return NextResponse.json({ success: true, secrets: result });
+      }
+
+      case 'generate_health_report': {
+        const report = await runHealthCheck();
+        const secrets = await validateSecrets();
+        await sendDailyHealthReport(report);
+        if (report.criticalDown.length > 0) await sendHealthAlert(report);
+        if (!secrets.allPresent) await sendSecretAlert(secrets);
+        return NextResponse.json({ success: true, report, secrets });
+      }
+
+      case 'send_alert': {
+        const message = (body as { action: 'send_alert'; message: string }).message;
+        if (!message) return NextResponse.json({ error: 'message requis' }, { status: 400 });
+        const webhook = process.env.SLACK_WEBHOOK_ERREURS;
+        if (webhook) {
+          await fetch(webhook, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ text: `:snake: *OROCHIMARU* : ${message}` }),
+          });
+        }
+        return NextResponse.json({ success: true, sent: true });
       }
 
       default: {

@@ -12,6 +12,8 @@ export type ToolName =
   | 'stripe'
   | 'openrouter'
   | 'resend'
+  | 'qdrant'
+  | 'n8n'
   | 'slack_general'
   | 'slack_alertes'
   | 'slack_erreurs';
@@ -33,7 +35,7 @@ export interface HealthReport {
 }
 
 // Outils critiques → toujours alerter si down
-const CRITICAL_TOOLS: ToolName[] = ['supabase', 'stripe', 'openrouter', 'resend'];
+const CRITICAL_TOOLS: ToolName[] = ['supabase', 'stripe', 'openrouter', 'resend', 'qdrant'];
 
 // Seuils de dégradation
 const DEGRADED_MS = 2_000;
@@ -131,6 +133,44 @@ async function checkResend(): Promise<ToolCheckResult> {
       error: res.ok ? undefined : `HTTP ${res.status}` };
   } catch (err) {
     return { tool: 'resend', status: 'down', responseTimeMs: Date.now() - start,
+      error: err instanceof Error ? err.message : 'Timeout' };
+  }
+}
+
+async function checkQdrant(): Promise<ToolCheckResult> {
+  const url = process.env.QDRANT_URL;
+  const key = process.env.QDRANT_API_KEY;
+  if (!url) return { tool: 'qdrant', status: 'unknown', responseTimeMs: 0, error: 'QDRANT_URL absent' };
+
+  const start = Date.now();
+  try {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (key) headers['api-key'] = key;
+    const res = await fetchWithTimeout(`${url}/collections`, { headers });
+    const ms  = Date.now() - start;
+    return { tool: 'qdrant', status: statusFromMs(ms, res.ok), responseTimeMs: ms,
+      error: res.ok ? undefined : `HTTP ${res.status}` };
+  } catch (err) {
+    return { tool: 'qdrant', status: 'down', responseTimeMs: Date.now() - start,
+      error: err instanceof Error ? err.message : 'Timeout' };
+  }
+}
+
+async function checkN8n(): Promise<ToolCheckResult> {
+  const url = process.env.N8N_URL;
+  const key = process.env.N8N_API_KEY;
+  if (!url) return { tool: 'n8n', status: 'unknown', responseTimeMs: 0, error: 'N8N_URL absent' };
+
+  const start = Date.now();
+  try {
+    const res = await fetchWithTimeout(`${url}/api/v1/workflows`, {
+      headers: { 'X-N8N-API-KEY': key ?? '' },
+    });
+    const ms  = Date.now() - start;
+    return { tool: 'n8n', status: statusFromMs(ms, res.ok), responseTimeMs: ms,
+      error: res.ok ? undefined : `HTTP ${res.status}` };
+  } catch (err) {
+    return { tool: 'n8n', status: 'down', responseTimeMs: Date.now() - start,
       error: err instanceof Error ? err.message : 'Timeout' };
   }
 }
@@ -255,7 +295,9 @@ export async function runHealthCheck(): Promise<HealthReport> {
     checkStripe(),
     checkOpenRouter(),
     checkResend(),
-    checkSlackWebhook('slack_general',  process.env.SLACK_WEBHOOK_GENERAL),
+    checkQdrant(),
+    checkN8n(),
+    checkSlackWebhook('slack_general',  process.env.SLACK_WEBHOOK),
     checkSlackWebhook('slack_alertes',  process.env.SLACK_WEBHOOK_ALERTES),
     checkSlackWebhook('slack_erreurs',  process.env.SLACK_WEBHOOK_ERREURS),
   ]);
@@ -327,6 +369,7 @@ export async function getLatestToolStatuses(): Promise<Record<ToolName, ToolChec
 
   const allTools: ToolName[] = [
     'supabase', 'stripe', 'openrouter', 'resend',
+    'qdrant', 'n8n',
     'slack_general', 'slack_alertes', 'slack_erreurs',
   ];
   for (const t of allTools) {

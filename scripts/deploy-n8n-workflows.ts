@@ -297,6 +297,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.contenu,
     agentLabel: 'ITACHI / Contenu LinkedIn',
   }),
+
+  buildWorkflow({
+    name:       'OROCHIMARU — Health check (6h)',
+    trigger:    scheduleTrigger(0, 0, 360),
+    taskType:   'infrastructure',
+    taskInput:  { action: 'health_check' },
+    slackUrl:   SLACK.erreurs,
+    agentLabel: 'OROCHIMARU / Health Check',
+  }),
+
+  buildWorkflow({
+    name:       'OROCHIMARU — Rapport santé quotidien (06h00)',
+    trigger:    scheduleTrigger(6, 0),
+    taskType:   'infrastructure',
+    taskInput:  { action: 'generate_health_report' },
+    slackUrl:   SLACK.general,
+    agentLabel: 'OROCHIMARU / Rapport Santé',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
