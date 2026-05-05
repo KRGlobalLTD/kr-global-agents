@@ -1,0 +1,33 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs><clipPath id="c"><circle cx="50" cy="50" r="50"/></clipPath></defs>
+  <g clip-path="url(#c)">
+    <circle cx="50" cy="50" r="50" fill="#1d4ed8"/>
+    <!-- Green hair -->
+    <ellipse cx="50" cy="22" rx="25" ry="16" fill="#1a6b2a"/>
+    <ellipse cx="28" cy="32" rx="9" ry="14" fill="#1a6b2a"/>
+    <ellipse cx="72" cy="32" rx="9" ry="14" fill="#1a6b2a"/>
+    <!-- Black bandana -->
+    <path d="M22 30 Q50 22 78 30 L78 42 Q50 34 22 42 Z" fill="#111827"/>
+    <!-- Face -->
+    <ellipse cx="50" cy="59" rx="20" ry="21" fill="#fde8d0"/>
+    <!-- 3 diagonal scars over left eye (bold, readable) -->
+    <line x1="32" y1="48" x2="40" y2="70" stroke="#c84040" stroke-width="2" stroke-linecap="round"/>
+    <line x1="37" y1="48" x2="45" y2="70" stroke="#c84040" stroke-width="2" stroke-linecap="round"/>
+    <line x1="42" y1="48" x2="50" y2="70" stroke="#c84040" stroke-width="2" stroke-linecap="round"/>
+    <!-- Left eye -->
+    <ellipse cx="42" cy="57" rx="5" ry="5.5" fill="white"/>
+    <circle cx="42" cy="58" r="3.5" fill="#2a3a60"/>
+    <circle cx="44" cy="56" r="1.3" fill="white"/>
+    <!-- Right eye -->
+    <ellipse cx="59" cy="57" rx="5" ry="5.5" fill="white"/>
+    <circle cx="59" cy="58" r="3.5" fill="#2a3a60"/>
+    <circle cx="61" cy="56" r="1.3" fill="white"/>
+    <!-- Stern straight eyebrows -->
+    <line x1="36" y1="50" x2="48" y2="50" stroke="#1a6b2a" stroke-width="2.8" stroke-linecap="round"/>
+    <line x1="53" y1="50" x2="65" y2="50" stroke="#1a6b2a" stroke-width="2.8" stroke-linecap="round"/>
+    <!-- Nose -->
+    <ellipse cx="50" cy="65" rx="1.5" ry="1" fill="#e0a882"/>
+    <!-- Firm mouth -->
+    <path d="M43 72 Q50 70 57 72" stroke="#b07850" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

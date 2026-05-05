@@ -1,0 +1,39 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs><clipPath id="c"><circle cx="50" cy="50" r="50"/></clipPath></defs>
+  <g clip-path="url(#c)">
+    <circle cx="50" cy="50" r="50" fill="#db2777"/>
+    <!-- Long black straight hair (sides) -->
+    <rect x="17" y="20" width="13" height="80" rx="6.5" fill="#1a1a1a"/>
+    <rect x="70" y="20" width="13" height="80" rx="6.5" fill="#1a1a1a"/>
+    <!-- Top hair -->
+    <ellipse cx="50" cy="20" rx="26" ry="14" fill="#1a1a1a"/>
+    <!-- Face -->
+    <ellipse cx="50" cy="58" rx="20" ry="22" fill="#fde8d0"/>
+    <!-- Eyebrows (sharp angled) -->
+    <path d="M34 50 Q42 46 48 50" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M52 50 Q58 46 66 50" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Sharingan eyes (red with tomoe) -->
+    <ellipse cx="42" cy="57" rx="5.5" ry="6" fill="white"/>
+    <circle cx="42" cy="57.5" r="4" fill="#cc2020"/>
+    <circle cx="42" cy="57.5" r="2" fill="#1a0000"/>
+    <!-- tomoe marks -->
+    <circle cx="42" cy="54" r="1" fill="#cc2020"/>
+    <circle cx="44.7" cy="59.5" r="1" fill="#cc2020"/>
+    <circle cx="39.3" cy="59.5" r="1" fill="#cc2020"/>
+    <ellipse cx="58" cy="57" rx="5.5" ry="6" fill="white"/>
+    <circle cx="58" cy="57.5" r="4" fill="#cc2020"/>
+    <circle cx="58" cy="57.5" r="2" fill="#1a0000"/>
+    <circle cx="58" cy="54" r="1" fill="#cc2020"/>
+    <circle cx="60.7" cy="59.5" r="1" fill="#cc2020"/>
+    <circle cx="55.3" cy="59.5" r="1" fill="#cc2020"/>
+    <!-- Tear marks / curse seal lines under each eye -->
+    <line x1="38" y1="63" x2="37" y2="70" stroke="#8b1a1a" stroke-width="1.8" stroke-linecap="round"/>
+    <line x1="42" y1="63" x2="42" y2="71" stroke="#8b1a1a" stroke-width="1.8" stroke-linecap="round"/>
+    <line x1="58" y1="63" x2="58" y2="71" stroke="#8b1a1a" stroke-width="1.8" stroke-linecap="round"/>
+    <line x1="62" y1="63" x2="63" y2="70" stroke="#8b1a1a" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Nose -->
+    <ellipse cx="50" cy="66" rx="1.5" ry="1" fill="#e0a882"/>
+    <!-- Serious expression -->
+    <path d="M43 73 Q50 71 57 73" stroke="#b07850" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

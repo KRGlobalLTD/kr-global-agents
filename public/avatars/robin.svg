@@ -1,0 +1,35 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs><clipPath id="c"><circle cx="50" cy="50" r="50"/></clipPath></defs>
+  <g clip-path="url(#c)">
+    <circle cx="50" cy="50" r="50" fill="#4338ca"/>
+    <!-- Long black hair (sides and back) -->
+    <rect x="17" y="22" width="13" height="78" rx="6.5" fill="#1a1a2e"/>
+    <rect x="70" y="22" width="13" height="78" rx="6.5" fill="#1a1a2e"/>
+    <!-- Top hair (slightly parted) -->
+    <ellipse cx="50" cy="20" rx="26" ry="14" fill="#1a1a2e"/>
+    <!-- Hair part / subtle highlight -->
+    <path d="M44 8 Q50 20 50 30" stroke="#2a2a40" stroke-width="3" fill="none"/>
+    <!-- Face -->
+    <ellipse cx="50" cy="58" rx="20" ry="22" fill="#fde8d0"/>
+    <!-- Refined eyebrows -->
+    <path d="M35 50 Q42 46 48 50" stroke="#1a1a2e" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M52 50 Q58 46 65 50" stroke="#1a1a2e" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- Left eye (dark, calm, intelligent) -->
+    <ellipse cx="42" cy="57" rx="5.5" ry="6" fill="white"/>
+    <circle cx="42" cy="58" r="4" fill="#1a1a5c"/>
+    <circle cx="42" cy="56" r="1.8" fill="#2a2a8c"/>
+    <circle cx="44" cy="55" r="1.2" fill="white"/>
+    <!-- Right eye -->
+    <ellipse cx="58" cy="57" rx="5.5" ry="6" fill="white"/>
+    <circle cx="58" cy="58" r="4" fill="#1a1a5c"/>
+    <circle cx="58" cy="56" r="1.8" fill="#2a2a8c"/>
+    <circle cx="60" cy="55" r="1.2" fill="white"/>
+    <!-- Lashes -->
+    <path d="M37 53 Q42 50 47 53" stroke="#1a1a2e" stroke-width="1.2" fill="none"/>
+    <path d="M53 53 Q58 50 63 53" stroke="#1a1a2e" stroke-width="1.2" fill="none"/>
+    <!-- Nose -->
+    <ellipse cx="50" cy="66" rx="1.5" ry="1" fill="#e0a882"/>
+    <!-- Mysterious calm smile -->
+    <path d="M43 72 Q50 77 57 72" stroke="#c07850" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

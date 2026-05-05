@@ -1,0 +1,36 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs><clipPath id="c"><circle cx="50" cy="50" r="50"/></clipPath></defs>
+  <g clip-path="url(#c)">
+    <circle cx="50" cy="50" r="50" fill="#7c3aed"/>
+    <!-- White spiky hair (multiple spikes upward) -->
+    <ellipse cx="50" cy="20" rx="24" ry="15" fill="#e8e8f0"/>
+    <!-- Spikes -->
+    <polygon points="30,22 26,0 36,18" fill="#e8e8f0"/>
+    <polygon points="40,17 38,0 46,15" fill="#e8e8f0"/>
+    <polygon points="50,15 50,0 56,14" fill="#e8e8f0"/>
+    <polygon points="60,17 62,0 68,18" fill="#e8e8f0"/>
+    <polygon points="70,22 74,0 78,20" fill="#e8e8f0"/>
+    <!-- Side hair -->
+    <ellipse cx="24" cy="38" rx="8" ry="16" fill="#e8e8f0"/>
+    <ellipse cx="76" cy="38" rx="8" ry="16" fill="#e8e8f0"/>
+    <!-- Face -->
+    <ellipse cx="50" cy="59" rx="20" ry="22" fill="#fde8d0"/>
+    <!-- Eyebrows (slightly furrowed, cold) -->
+    <path d="M36 50 Q42 48 47 51" stroke="#888" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M53 51 Q58 48 64 50" stroke="#888" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <!-- Left eye (blue, sharp) -->
+    <ellipse cx="42" cy="57" rx="5.5" ry="6" fill="white"/>
+    <circle cx="42" cy="58" r="4" fill="#1a6ab0"/>
+    <circle cx="42" cy="56" r="1.8" fill="#0d4a80"/>
+    <circle cx="44" cy="55" r="1.2" fill="white"/>
+    <!-- Right eye -->
+    <ellipse cx="58" cy="57" rx="5.5" ry="6" fill="white"/>
+    <circle cx="58" cy="58" r="4" fill="#1a6ab0"/>
+    <circle cx="58" cy="56" r="1.8" fill="#0d4a80"/>
+    <circle cx="60" cy="55" r="1.2" fill="white"/>
+    <!-- Nose -->
+    <ellipse cx="50" cy="66" rx="1.5" ry="1" fill="#e0a882"/>
+    <!-- Neutral/cold expression -->
+    <path d="M44 72 L56 72" stroke="#b07850" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>

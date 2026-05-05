@@ -1,0 +1,41 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs><clipPath id="c"><circle cx="50" cy="50" r="50"/></clipPath></defs>
+  <g clip-path="url(#c)">
+    <circle cx="50" cy="50" r="50" fill="#dc2626"/>
+    <!-- Straw hat brim -->
+    <ellipse cx="50" cy="24" rx="35" ry="8" fill="#d4a820"/>
+    <!-- Hat band (red) -->
+    <rect x="20" y="18" width="60" height="5" rx="2" fill="#991b1b"/>
+    <!-- Hat dome -->
+    <ellipse cx="50" cy="18" rx="26" ry="14" fill="#e5b830"/>
+    <!-- Black hair (below hat) -->
+    <ellipse cx="50" cy="30" rx="22" ry="10" fill="#1a1a1a"/>
+    <ellipse cx="28" cy="38" rx="8" ry="12" fill="#1a1a1a"/>
+    <ellipse cx="72" cy="38" rx="8" ry="12" fill="#1a1a1a"/>
+    <!-- Face -->
+    <ellipse cx="50" cy="60" rx="20" ry="21" fill="#fde8d0"/>
+    <!-- X scar under left eye (iconic) -->
+    <line x1="37" y1="60" x2="43" y2="66" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="43" y1="60" x2="37" y2="66" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round"/>
+    <!-- Eyebrows (energetic) -->
+    <path d="M35 52 Q42 48 48 52" stroke="#1a1a1a" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M52 52 Q58 48 65 52" stroke="#1a1a1a" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <!-- Left eye (big happy) -->
+    <ellipse cx="42" cy="57" rx="5.5" ry="6" fill="white"/>
+    <circle cx="42" cy="58" r="4" fill="#1a1a1a"/>
+    <circle cx="44" cy="56" r="1.5" fill="white"/>
+    <!-- Right eye -->
+    <ellipse cx="58" cy="57" rx="5.5" ry="6" fill="white"/>
+    <circle cx="58" cy="58" r="4" fill="#1a1a1a"/>
+    <circle cx="60" cy="56" r="1.5" fill="white"/>
+    <!-- Nose -->
+    <ellipse cx="50" cy="65" rx="1.5" ry="1" fill="#e0a882"/>
+    <!-- Huge grin (teeth) -->
+    <path d="M37 70 Q50 82 63 70" fill="#dc2626" stroke="#c07850" stroke-width="1"/>
+    <ellipse cx="50" cy="74" rx="11" ry="6" fill="white"/>
+    <path d="M39 74 L61 74" stroke="#e0a882" stroke-width="0.8"/>
+    <path d="M45 74 L45 80" stroke="#e0a882" stroke-width="0.8"/>
+    <path d="M50 74 L50 80" stroke="#e0a882" stroke-width="0.8"/>
+    <path d="M55 74 L55 80" stroke="#e0a882" stroke-width="0.8"/>
+  </g>
+</svg>

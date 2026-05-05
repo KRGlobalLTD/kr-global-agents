@@ -3,11 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createClient }                from '@supabase/supabase-js';
 import type { RecentTask }             from '@/app/api/dashboard/stats/route';
-
-const AGENT_EMOJI: Record<string, string> = {
-  ZORO: '⚔️', NAMI: '🗺️', LUFFY: '📬', KILLUA: '🎯', ITACHI: '🎨',
-  HASHIRAMA: '🌳', TSUNADE: '💰', ROBIN: '📚', SANJI: '📱', CHOPPER: '🔧', OROCHIMARU: '🛡️',
-};
+import { AgentAvatar }                 from './AgentAvatar';
 
 const STATUS_CONFIG = {
   completed: { label: 'OK',       color: '#34d399', bg: 'rgba(52,211,153,0.1)'  },
@@ -108,7 +104,6 @@ export function ActivityFeed({ initialTasks }: ActivityFeedProps) {
 
         {tasks.map((task, i) => {
           const cfg = STATUS_CONFIG[task.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.pending;
-          const emoji = AGENT_EMOJI[task.agent_name] ?? '🤖';
 
           return (
             <div
@@ -120,7 +115,7 @@ export function ActivityFeed({ initialTasks }: ActivityFeedProps) {
                 animation:    i === 0 ? 'fadeIn 0.3s ease' : undefined,
               }}
             >
-              <span className="text-base leading-none flex-shrink-0">{emoji}</span>
+              <AgentAvatar name={task.agent_name} size={28} />
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">

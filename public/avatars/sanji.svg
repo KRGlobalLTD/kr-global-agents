@@ -1,0 +1,31 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs><clipPath id="c"><circle cx="50" cy="50" r="50"/></clipPath></defs>
+  <g clip-path="url(#c)">
+    <circle cx="50" cy="50" r="50" fill="#0891b2"/>
+    <!-- Blonde hair swept to cover left eye -->
+    <ellipse cx="50" cy="22" rx="26" ry="16" fill="#f5c820"/>
+    <!-- Hair sweeping right and over left eye -->
+    <ellipse cx="26" cy="44" rx="16" ry="24" fill="#f5c820"/>
+    <path d="M18 20 Q28 15 40 25 Q30 35 24 50 Q18 40 18 20" fill="#e8b818"/>
+    <!-- Right side hair -->
+    <ellipse cx="76" cy="36" rx="10" ry="18" fill="#f5c820"/>
+    <!-- Face -->
+    <ellipse cx="50" cy="59" rx="20" ry="22" fill="#fde8d0"/>
+    <!-- Hair covering LEFT eye entirely -->
+    <path d="M28 35 Q35 38 40 50 Q37 56 33 62 Q25 55 23 45 Q25 38 28 35Z" fill="#f0c018"/>
+    <!-- Right eye only (left hidden by hair) -->
+    <ellipse cx="59" cy="57" rx="5.5" ry="6" fill="white"/>
+    <circle cx="59" cy="58" r="4" fill="#2a1a0a"/>
+    <circle cx="61" cy="56" r="1.5" fill="white"/>
+    <!-- Curly eyebrow on right (iconic Sanji feature) -->
+    <path d="M52 50 Q59 44 66 49" stroke="#8b6914" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Curl at end of eyebrow -->
+    <path d="M66 49 Q70 47 68 44" stroke="#8b6914" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- Nose -->
+    <ellipse cx="55" cy="65" rx="1.5" ry="1" fill="#e0a882"/>
+    <!-- Elegant slight smile -->
+    <path d="M46 72 Q54 77 62 72" stroke="#c07850" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- Suit collar hint -->
+    <path d="M35 90 Q50 82 65 90" stroke="#1a1a2e" stroke-width="3" fill="none"/>
+  </g>
+</svg>

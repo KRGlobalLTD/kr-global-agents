@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import MobileNav from './components/MobileNav';
 
 export const metadata: Metadata = {
   title: 'Mission Control — KR Global',
@@ -63,9 +64,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       </aside>
 
       {/* Main */}
-      <main className="flex-1 min-w-0 overflow-auto">
+      <main className="flex-1 min-w-0 overflow-auto pb-[60px] md:pb-0">
         {children}
       </main>
+
+      {/* Bottom nav — mobile only */}
+      <MobileNav />
     </div>
   );
 }

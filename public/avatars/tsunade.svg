@@ -1,0 +1,39 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs><clipPath id="c"><circle cx="50" cy="50" r="50"/></clipPath></defs>
+  <g clip-path="url(#c)">
+    <circle cx="50" cy="50" r="50" fill="#be185d"/>
+    <!-- Blonde hair (two side sections, Tsunade style) -->
+    <ellipse cx="50" cy="22" rx="25" ry="14" fill="#f5c820"/>
+    <!-- Left side hair section (pigtail-ish) -->
+    <ellipse cx="20" cy="52" rx="10" ry="30" fill="#f0c018"/>
+    <!-- Right side hair section -->
+    <ellipse cx="80" cy="52" rx="10" ry="30" fill="#f0c018"/>
+    <!-- Hair ties -->
+    <ellipse cx="22" cy="36" rx="6" ry="4" fill="#10b981"/>
+    <ellipse cx="78" cy="36" rx="6" ry="4" fill="#10b981"/>
+    <!-- Face -->
+    <ellipse cx="50" cy="58" rx="20" ry="22" fill="#fde8d0"/>
+    <!-- Diamond mark on forehead (teal/blue, healing seal) -->
+    <polygon points="50,35 55,41 50,47 45,41" fill="#14b8a6"/>
+    <!-- Confident eyebrows (strong arched) -->
+    <path d="M35 50 Q43 45 49 50" stroke="#8b6914" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M51 50 Q57 45 65 50" stroke="#8b6914" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Left eye (light hazel) -->
+    <ellipse cx="42" cy="57" rx="5.5" ry="6" fill="white"/>
+    <circle cx="42" cy="58" r="4" fill="#6b4c20"/>
+    <circle cx="42" cy="56" r="1.8" fill="#8b6c30"/>
+    <circle cx="44" cy="55" r="1.3" fill="white"/>
+    <!-- Right eye -->
+    <ellipse cx="58" cy="57" rx="5.5" ry="6" fill="white"/>
+    <circle cx="58" cy="58" r="4" fill="#6b4c20"/>
+    <circle cx="58" cy="56" r="1.8" fill="#8b6c30"/>
+    <circle cx="60" cy="55" r="1.3" fill="white"/>
+    <!-- Lashes -->
+    <path d="M37 53 Q42 50 47 53" stroke="#8b6914" stroke-width="1.2" fill="none"/>
+    <path d="M53 53 Q58 50 63 53" stroke="#8b6914" stroke-width="1.2" fill="none"/>
+    <!-- Nose -->
+    <ellipse cx="50" cy="66" rx="1.5" ry="1" fill="#e0a882"/>
+    <!-- Confident smile -->
+    <path d="M42 72 Q50 78 58 72" stroke="#c07850" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

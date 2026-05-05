@@ -1,0 +1,31 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs><clipPath id="c"><circle cx="50" cy="50" r="50"/></clipPath></defs>
+  <g clip-path="url(#c)">
+    <circle cx="50" cy="50" r="50" fill="#4b5563"/>
+    <!-- Long straight black hair (sides, very long) -->
+    <rect x="16" y="18" width="14" height="82" rx="7" fill="#111"/>
+    <rect x="70" y="18" width="14" height="82" rx="7" fill="#111"/>
+    <!-- Top hair -->
+    <ellipse cx="50" cy="18" rx="28" ry="13" fill="#111"/>
+    <!-- Face (pale) -->
+    <ellipse cx="50" cy="58" rx="20" ry="22" fill="#e0e0e0"/>
+    <!-- Eyebrows (thin, sharp) -->
+    <path d="M34 51 Q42 48 48 52" stroke="#1a1a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M52 52 Q58 48 66 51" stroke="#1a1a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- Serpentine eyes (gold slit pupils) -->
+    <ellipse cx="42" cy="57" rx="5.5" ry="6" fill="#c0c0c0"/>
+    <ellipse cx="42" cy="57.5" rx="4" ry="4.5" fill="#c8a820"/>
+    <ellipse cx="42" cy="57.5" rx="1.2" ry="4" fill="#1a0a00"/>
+    <circle cx="44" cy="55.5" r="0.8" fill="#e8c840"/>
+    <ellipse cx="58" cy="57" rx="5.5" ry="6" fill="#c0c0c0"/>
+    <ellipse cx="58" cy="57.5" rx="4" ry="4.5" fill="#c8a820"/>
+    <ellipse cx="58" cy="57.5" rx="1.2" ry="4" fill="#1a0a00"/>
+    <circle cx="60" cy="55.5" r="0.8" fill="#e8c840"/>
+    <!-- Nose (narrow) -->
+    <ellipse cx="50" cy="65" rx="1.2" ry="1" fill="#c0a8a0"/>
+    <!-- Sinister thin smirk -->
+    <path d="M43 71 Q50 68 57 71 Q53 74 50 74 Q47 74 43 71" fill="#c0a0a0"/>
+    <!-- Tongue hint (signature) -->
+    <ellipse cx="50" cy="73" rx="3" ry="2" fill="#e05050"/>
+  </g>
+</svg>

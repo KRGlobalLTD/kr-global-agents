@@ -1,20 +1,7 @@
 'use client';
 
 import type { AgentStat } from '@/app/api/dashboard/stats/route';
-
-const AGENT_EMOJI: Record<string, string> = {
-  ZORO:       '⚔️',
-  NAMI:       '🗺️',
-  LUFFY:      '📬',
-  KILLUA:     '🎯',
-  ITACHI:     '🎨',
-  HASHIRAMA:  '🌳',
-  TSUNADE:    '💰',
-  ROBIN:      '📚',
-  SANJI:      '📱',
-  CHOPPER:    '🔧',
-  OROCHIMARU: '🛡️',
-};
+import { AgentAvatar }    from './AgentAvatar';
 
 function StatusDot({ status }: { status: AgentStat['status'] }) {
   const config = {
@@ -56,8 +43,6 @@ interface AgentCardProps {
 }
 
 export function AgentCard({ agent }: AgentCardProps) {
-  const emoji = AGENT_EMOJI[agent.name] ?? '🤖';
-
   return (
     <div
       className="rounded-xl border p-4 flex flex-col gap-3 transition-all duration-200 hover:border-[#7c3aed]/50"
@@ -69,7 +54,7 @@ export function AgentCard({ agent }: AgentCardProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-xl leading-none">{emoji}</span>
+          <AgentAvatar name={agent.name} size={32} />
           <span className="font-semibold text-white text-sm tracking-wide">{agent.name}</span>
         </div>
         <StatusDot status={agent.status} />

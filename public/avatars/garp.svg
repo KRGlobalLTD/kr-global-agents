@@ -1,0 +1,32 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs><clipPath id="c"><circle cx="50" cy="50" r="50"/></clipPath></defs>
+  <g clip-path="url(#c)">
+    <circle cx="50" cy="50" r="50" fill="#ca8a04"/>
+    <!-- Short gray/white hair (wide, authoritative) -->
+    <ellipse cx="50" cy="22" rx="28" ry="16" fill="#9ca3af"/>
+    <ellipse cx="22" cy="38" rx="8" ry="14" fill="#9ca3af"/>
+    <ellipse cx="78" cy="38" rx="8" ry="14" fill="#9ca3af"/>
+    <!-- Face (wide, strong jaw) -->
+    <ellipse cx="50" cy="60" rx="23" ry="22" fill="#f5d5b0"/>
+    <!-- Thick prominent eyebrows -->
+    <path d="M33 50 Q42 45 50 50" stroke="#555" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M50 50 Q58 45 67 50" stroke="#555" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <!-- Left eye -->
+    <ellipse cx="41" cy="57" rx="5.5" ry="6" fill="white"/>
+    <circle cx="41" cy="58" r="3.8" fill="#3a2a10"/>
+    <circle cx="43" cy="56" r="1.4" fill="white"/>
+    <!-- Right eye -->
+    <ellipse cx="59" cy="57" rx="5.5" ry="6" fill="white"/>
+    <circle cx="59" cy="58" r="3.8" fill="#3a2a10"/>
+    <circle cx="61" cy="56" r="1.4" fill="white"/>
+    <!-- Nose (broader) -->
+    <ellipse cx="50" cy="66" rx="2.5" ry="1.5" fill="#d4a070"/>
+    <!-- Strong jaw line emphasis -->
+    <path d="M27 68 Q50 82 73 68" stroke="#d4a070" stroke-width="1" fill="none"/>
+    <!-- Authoritative closed mouth -->
+    <path d="M40 72 Q50 70 60 72" stroke="#b07040" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Stubble hints -->
+    <ellipse cx="40" cy="76" rx="4" ry="2" fill="#c4a080" opacity="0.5"/>
+    <ellipse cx="60" cy="76" rx="4" ry="2" fill="#c4a080" opacity="0.5"/>
+  </g>
+</svg>
