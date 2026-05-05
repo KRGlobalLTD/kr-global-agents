@@ -161,29 +161,30 @@ function ifSuccess(): N8nNode {
 }
 
 function slackNotify(
-  nodeName: string,
+  nodeName:   string,
   webhookUrl: string,
-  successMsg: string,
-  errorMsg:   string,
+  agentLabel: string,
   isSuccess:  boolean,
 ): N8nNode {
-  const msg   = isSuccess ? successMsg : errorMsg;
-  const posX  = isSuccess ? 960 : 960;
-  const posY  = isSuccess ? 200 : 400;
+  // n8n expressions: value starts with = so the field is evaluated at runtime.
+  // $json refers to the output of the previous node (HTTP Request → our API).
+  const body = isSuccess
+    ? `={{ JSON.stringify({ text: "✅ *${agentLabel}*\\nAgent : " + ($json.agent_name || "?") + "\\nStatus : " + $json.status + "\\nRésultat : " + ($json.task_result ? JSON.stringify($json.task_result).slice(0, 400) : "—") }) }}`
+    : `={{ JSON.stringify({ text: "❌ *${agentLabel}* — Erreur\\n" + ($json.error || "Erreur inconnue") }) }}`;
 
   return {
     id:          uid(),
     name:        nodeName,
     type:        'n8n-nodes-base.httpRequest',
     typeVersion: 4.2,
-    position:    [posX, posY],
+    position:    [960, isSuccess ? 200 : 400],
     parameters:  {
       method:         'POST',
       url:            webhookUrl,
       sendBody:       true,
       contentType:    'raw',
       rawContentType: 'application/json',
-      body:           JSON.stringify({ text: msg }),
+      body,
       options:        {},
     },
   };
@@ -202,20 +203,8 @@ function buildWorkflow(cfg: {
   const trigger  = cfg.trigger;
   const callNode = agentHttpRequest(cfg.taskType, cfg.taskInput);
   const ifNode   = ifSuccess();
-  const okSlack  = slackNotify(
-    'Slack — Succès',
-    cfg.slackUrl,
-    `✅ *${cfg.agentLabel}* — Tâche complétée avec succès\nRésultat : \`={{ JSON.stringify($json.task_result) }}\``,
-    '',
-    true,
-  );
-  const errSlack = slackNotify(
-    'Slack — Erreur',
-    SLACK.erreurs || cfg.slackUrl,
-    '',
-    `❌ *${cfg.agentLabel}* — Erreur\n\`={{ $json.error ?? 'Erreur inconnue' }}\``,
-    false,
-  );
+  const okSlack  = slackNotify('Slack — Succès', cfg.slackUrl,                   cfg.agentLabel, true);
+  const errSlack = slackNotify('Slack — Erreur', SLACK.erreurs || cfg.slackUrl, cfg.agentLabel, false);
 
   const connections: Record<string, unknown> = {
     [trigger.name]:    { main: [[{ node: callNode.name, type: 'main', index: 0 }]] },
@@ -380,6 +369,24 @@ async function main() {
   } catch (err) {
     console.error(`   ✗ Impossible de se connecter : ${(err as Error).message}`);
     process.exit(1);
+  }
+
+  // Nettoyage : suppression des workflows existants portant le même nom
+  const nameSet  = new Set(WORKFLOWS.map(w => w.name));
+  const existing = await n8nRequest<{ data: Array<{ id: string; name: string }> }>('GET', '/workflows?limit=100');
+  const toDelete = existing.data.filter(w => nameSet.has(w.name));
+
+  if (toDelete.length > 0) {
+    console.log(`🧹 Suppression de ${toDelete.length} workflow(s) existant(s)...\n`);
+    for (const wf of toDelete) {
+      try {
+        await n8nRequest('DELETE', `/workflows/${wf.id}`);
+        console.log(`   🗑 ${wf.name}`);
+      } catch {
+        console.log(`   ⚠ Impossible de supprimer : ${wf.name}`);
+      }
+    }
+    console.log();
   }
 
   // Déploiement
