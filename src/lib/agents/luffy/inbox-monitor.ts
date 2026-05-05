@@ -23,7 +23,7 @@ interface ZohoMessage {
   folderId: string;
   subject: string;
   fromAddress: string;
-  fromDisplayName: string;
+  sender: string;       // display name / sender name
   receivedTime: string; // ms timestamp en string
 }
 
@@ -50,15 +50,8 @@ export interface MonitorResult {
 
 // ---- Config ----
 
-function zohoBase(): string {
-  const domain = process.env.ZOHO_API_DOMAIN ?? 'zoho.com';
-  return `https://mail.${domain}/api`;
-}
-
-function zohoAuthUrl(): string {
-  const domain = process.env.ZOHO_API_DOMAIN ?? 'zoho.com';
-  return `https://accounts.${domain}/oauth/v2/token`;
-}
+const ZOHO_MAIL_BASE = 'https://mail.zoho.com/api';
+const ZOHO_AUTH_URL  = 'https://accounts.zoho.com/oauth/v2/token';
 
 // ---- OAuth2 — rafraîchissement du token ----
 
@@ -70,7 +63,7 @@ async function refreshAccessToken(): Promise<string> {
     client_secret: process.env.ZOHO_CLIENT_SECRET!,
   });
 
-  const response = await fetch(zohoAuthUrl(), {
+  const response = await fetch(ZOHO_AUTH_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: params.toString(),
@@ -92,8 +85,8 @@ function zohoHeaders(token: string): Record<string, string> {
 }
 
 async function fetchUnreadMessages(token: string): Promise<ZohoMessage[]> {
-  const accountId = process.env.ZOHO_ACCOUNT_ID!;
-  const url = `${zohoBase()}/accounts/${accountId}/messages/view?folder=INBOX&status=unread&limit=20&sortorder=asc`;
+  const accountId = process.env.ZOHO_ACCOUNT_ID_!;
+  const url = `${ZOHO_MAIL_BASE}/accounts/${accountId}/messages/view?status=unread&limit=20`;
 
   const response = await fetch(url, { headers: zohoHeaders(token) });
 
@@ -111,8 +104,8 @@ async function fetchMessageContent(
   messageId: string,
   folderId: string
 ): Promise<string> {
-  const accountId = process.env.ZOHO_ACCOUNT_ID!;
-  const url = `${zohoBase()}/accounts/${accountId}/folders/${folderId}/messages/${messageId}`;
+  const accountId = process.env.ZOHO_ACCOUNT_ID_!;
+  const url = `${ZOHO_MAIL_BASE}/accounts/${accountId}/folders/${folderId}/messages/${messageId}/content`;
 
   const response = await fetch(url, { headers: zohoHeaders(token) });
 
@@ -128,14 +121,15 @@ async function markAsRead(
   token: string,
   messageId: string
 ): Promise<void> {
-  const accountId = process.env.ZOHO_ACCOUNT_ID!;
-  const url = `${zohoBase()}/accounts/${accountId}/updatemessage`;
+  const accountId = process.env.ZOHO_ACCOUNT_ID_!;
+  const url = `${ZOHO_MAIL_BASE}/accounts/${accountId}/updatemessage`;
 
-  await fetch(url, {
+  // Non-blocking: deduplication via Supabase message_id handles reprocessing prevention
+  fetch(url, {
     method: 'PUT',
     headers: { ...zohoHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify({ mode: 'markAsRead', messageId: [messageId] }),
-  });
+  }).catch(() => { /* intentionally silent */ });
 }
 
 // ---- Strip HTML ----
@@ -197,7 +191,7 @@ export async function runInboxMonitor(): Promise<MonitorResult> {
       const email: IncomingEmail = {
         messageId:  msg.messageId,
         fromEmail:  msg.fromAddress,
-        fromName:   msg.fromDisplayName,
+        fromName:   msg.sender,
         subject:    msg.subject,
         body,
         receivedAt: new Date(parseInt(msg.receivedTime, 10)),
