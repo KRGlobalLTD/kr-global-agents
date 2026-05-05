@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { label: 'Activité',     href: '/dashboard#activity',     emoji: '⚡' },
   { label: 'Mémoire',      href: '/dashboard#qdrant',       emoji: '🧠' },
   { label: 'Workflows',    href: '/dashboard#n8n',          emoji: '🔁' },
+  { label: 'Chat',         href: '/dashboard/chat',         emoji: '💬' },
 ];
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
