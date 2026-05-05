@@ -259,7 +259,7 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
 
   buildWorkflow({
     name:       'NAMI — Onboarding nouveau client',
-    trigger:    webhookTrigger('nami/new-client'),
+    trigger:    webhookTrigger('nami/new-client-v2'),
     taskType:   'onboarding',
     taskInput:  { action: 'send_welcome_email' },
     slackUrl:   SLACK.revenus,
