@@ -60,22 +60,22 @@ export interface FindResult {
 
 async function searchApollo(filters: ProspectSearchFilters): Promise<ApolloPerson[]> {
   const body: Record<string, unknown> = {
-    api_key:  process.env.APOLLO_API_KEY,
     page:     filters.page    ?? 1,
     per_page: filters.perPage ?? 25,
   };
 
-  if (filters.jobTitles?.length)     body['person_titles']               = filters.jobTitles;
-  if (filters.locations?.length)     body['person_locations']            = filters.locations;
-  if (filters.industries?.length)    body['organization_industry_tag_ids'] = filters.industries;
-  if (filters.employeeRanges?.length) body['organization_num_employees_ranges'] = filters.employeeRanges;
-  if (filters.keywords)              body['q_keywords']                  = filters.keywords;
+  if (filters.jobTitles?.length)      body['person_titles']                       = filters.jobTitles;
+  if (filters.locations?.length)      body['person_locations']                    = filters.locations;
+  if (filters.industries?.length)     body['organization_industry_tag_ids']       = filters.industries;
+  if (filters.employeeRanges?.length) body['organization_num_employees_ranges']   = filters.employeeRanges;
+  if (filters.keywords)               body['q_keywords']                          = filters.keywords;
 
   const response = await fetch('https://api.apollo.io/v1/mixed_people/search', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Cache-Control': 'no-cache',
+      'X-Api-Key':    process.env.APOLLO_API_KEY_ ?? '',
     },
     body: JSON.stringify(body),
   });
