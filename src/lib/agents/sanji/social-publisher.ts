@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import crypto from 'node:crypto';
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -7,7 +8,7 @@ const supabase = createClient(
 
 // ---- Types ----
 
-export type Platform = 'linkedin' | 'instagram' | 'tiktok';
+export type Platform = 'linkedin' | 'instagram' | 'tiktok' | 'twitter';
 
 export interface PublishInput {
   contentId?:  string;      // depuis la table content d'ITACHI
@@ -53,6 +54,10 @@ async function fetchContentFromDb(contentId: string): Promise<ContentRow> {
 // ---- Adaptation par plateforme via Gemini 2.0 Flash ----
 
 const PLATFORM_GUIDES: Record<Platform, string> = {
+  twitter: (
+    'Twitter/X - percutant et direct, 280 caractères tout compris (texte + hashtags), ' +
+    '2 hashtags maximum, hook fort en première ligne, un seul message.'
+  ),
   linkedin: (
     'LinkedIn - ton B2B professionnel, 1 200 caractères max, ' +
     '3 à 5 hashtags en fin de texte, pas d\'excès d\'emojis, ' +
@@ -188,6 +193,85 @@ async function publishToLinkedIn(
 
   const data = (await res.json()) as LinkedInPostResponse;
   return data.id;
+}
+
+// ---- Twitter/X API v2 (OAuth 1.0a) ----
+
+function buildOAuth1Header(
+  method: string,
+  url:    string,
+  body:   Record<string, string>,
+): string {
+  const apiKey      = process.env.TWITTER_API_KEY ?? '';
+  const apiSecret   = process.env.TWITTER_API_SECRET ?? '';
+  const token       = process.env.TWITTER_ACCESS_TOKEN ?? '';
+  const tokenSecret = process.env.TWITTER_ACCESS_SECRET ?? '';
+
+  const nonce     = crypto.randomBytes(16).toString('hex');
+  const timestamp = String(Math.floor(Date.now() / 1000));
+
+  const oauthParams: Record<string, string> = {
+    oauth_consumer_key:     apiKey,
+    oauth_nonce:            nonce,
+    oauth_signature_method: 'HMAC-SHA1',
+    oauth_timestamp:        timestamp,
+    oauth_token:            token,
+    oauth_version:          '1.0',
+  };
+
+  const allParams = { ...oauthParams, ...body };
+  const paramStr  = Object.keys(allParams)
+    .sort()
+    .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(allParams[k])}`)
+    .join('&');
+
+  const baseStr   = `${method}&${encodeURIComponent(url)}&${encodeURIComponent(paramStr)}`;
+  const signingKey = `${encodeURIComponent(apiSecret)}&${encodeURIComponent(tokenSecret)}`;
+  const signature  = crypto.createHmac('sha1', signingKey).update(baseStr).digest('base64');
+
+  const header = Object.entries({ ...oauthParams, oauth_signature: signature })
+    .map(([k, v]) => `${encodeURIComponent(k)}="${encodeURIComponent(v)}"`)
+    .join(', ');
+
+  return `OAuth ${header}`;
+}
+
+async function publishToTwitter(text: string): Promise<string> {
+  const apiKey      = process.env.TWITTER_API_KEY;
+  const apiSecret   = process.env.TWITTER_API_SECRET;
+  const accessToken = process.env.TWITTER_ACCESS_TOKEN;
+  const accessSecret = process.env.TWITTER_ACCESS_SECRET;
+
+  if (!apiKey || !apiSecret || !accessToken || !accessSecret) {
+    await supabase.from('alerts').insert({
+      agent_name: 'SANJI',
+      level:      'WARNING',
+      message:    'Twitter non configuré : TWITTER_API_KEY / SECRET manquants — publication ignorée',
+    });
+    throw new Error('Twitter non configuré');
+  }
+
+  const tweetText = text.slice(0, 280);
+  const url       = 'https://api.twitter.com/2/tweets';
+  const bodyObj   = { text: tweetText };
+  const authHeader = buildOAuth1Header('POST', url, {});
+
+  const res = await fetch(url, {
+    method:  'POST',
+    headers: {
+      Authorization:  authHeader,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(bodyObj),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Twitter API ${res.status}: ${err}`);
+  }
+
+  const data = (await res.json()) as { data: { id: string } };
+  return data.data.id;
 }
 
 // ---- Instagram Graph API ----
@@ -341,6 +425,11 @@ export async function publishContent(input: PublishInput): Promise<PublishResult
         postId = await publishToLinkedIn(adapted.texte, adapted.hashtags);
       } else if (plateforme === 'instagram') {
         postId = await publishToInstagram(adapted.texte, adapted.hashtags, input.mediaUrl);
+      } else if (plateforme === 'twitter') {
+        const tweetText = adapted.hashtags.length > 0
+          ? `${adapted.texte} ${adapted.hashtags.slice(0, 2).map(h => `#${h}`).join(' ')}`.slice(0, 280)
+          : adapted.texte.slice(0, 280);
+        postId = await publishToTwitter(tweetText);
       } else {
         // TikTok - contenu adapté enregistré pour publication manuelle
         statut = 'planifie';

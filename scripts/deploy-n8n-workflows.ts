@@ -299,6 +299,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
   }),
 
   buildWorkflow({
+    name:       'SANJI — Publication LinkedIn (09h00)',
+    trigger:    scheduleTrigger(9, 0),
+    taskType:   'social',
+    taskInput:  { action: 'publish_due', platform: 'linkedin' },
+    slackUrl:   SLACK.contenu,
+    agentLabel: 'SANJI / LinkedIn',
+  }),
+
+  buildWorkflow({
+    name:       'SANJI — Publication Twitter (12h00)',
+    trigger:    scheduleTrigger(12, 0),
+    taskType:   'social',
+    taskInput:  { action: 'publish_due', platform: 'twitter' },
+    slackUrl:   SLACK.contenu,
+    agentLabel: 'SANJI / Twitter',
+  }),
+
+  buildWorkflow({
     name:       'OROCHIMARU — Health check (6h)',
     trigger:    scheduleTrigger(0, 0, 360),
     taskType:   'infrastructure',

@@ -11,6 +11,7 @@ import { tsunadeNode }   from './agents/tsunade';
 import { hashiramaNode } from './agents/hashirama';
 import { garpNode }        from './agents/garp';
 import { orochimaruNode }  from './agents/orochimaru';
+import { sanjiNode }       from './agents/sanji';
 
 // ── Routing ───────────────────────────────────────────────────────────────────
 
@@ -24,6 +25,7 @@ const TASK_AGENT: Record<TaskType, string> = {
   supervisor:   'hashirama',
   reporting:      'garp',
   infrastructure: 'orochimaru',
+  social:         'sanji',
 };
 
 // ── Supervisor node ───────────────────────────────────────────────────────────
@@ -70,6 +72,7 @@ const graph = new StateGraph(KRGlobalState)
   .addNode('hashirama',  hashiramaNode)
   .addNode('garp',        garpNode)
   .addNode('orochimaru',  orochimaruNode)
+  .addNode('sanji',       sanjiNode)
   .addEdge(START, 'supervisor')
   .addConditionalEdges('supervisor', selectAgent, {
     zoro:      'zoro',
@@ -81,6 +84,7 @@ const graph = new StateGraph(KRGlobalState)
     hashirama: 'hashirama',
     garp:        'garp',
     orochimaru:  'orochimaru',
+    sanji:       'sanji',
   })
   .addEdge('zoro',      END)
   .addEdge('nami',      END)
@@ -90,7 +94,8 @@ const graph = new StateGraph(KRGlobalState)
   .addEdge('tsunade',   END)
   .addEdge('hashirama', END)
   .addEdge('garp',       END)
-  .addEdge('orochimaru', END);
+  .addEdge('orochimaru', END)
+  .addEdge('sanji',      END);
 
 export const hashirama = graph.compile();
 
