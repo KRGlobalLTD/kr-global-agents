@@ -18,7 +18,7 @@ interface AgentRequestBody {
 }
 
 const VALID_TASK_TYPES = new Set<TaskType>([
-  'accounting', 'marketing', 'email', 'prospecting', 'onboarding', 'finance', 'supervisor',
+  'accounting', 'marketing', 'email', 'prospecting', 'onboarding', 'finance', 'supervisor', 'reporting',
 ]);
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
