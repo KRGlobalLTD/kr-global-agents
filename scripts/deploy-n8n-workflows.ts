@@ -385,6 +385,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.general,
     agentLabel: 'OROCHIMARU / Rapport Santé',
   }),
+
+  buildWorkflow({
+    name:       'TSUNADE — Calcul dividendes trimestriel (1er du mois 07h00)',
+    trigger:    scheduleTrigger(7, 0),
+    taskType:   'finance',
+    taskInput:  { action: 'calculate_dividends' },
+    slackUrl:   SLACK.revenus,
+    agentLabel: 'TSUNADE / Dividendes',
+  }),
+
+  buildWorkflow({
+    name:       'TSUNADE — Dépenses en attente (toutes les 4h)',
+    trigger:    scheduleTrigger(0, 0, 240),
+    taskType:   'finance',
+    taskInput:  { action: 'get_pending' },
+    slackUrl:   SLACK.depenses,
+    agentLabel: 'TSUNADE / Dépenses Pending',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
