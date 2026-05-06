@@ -10,7 +10,7 @@ export function getLLM(jsonMode = false): ChatOpenAI {
         model:       'google/gemini-2.0-flash-001',
         temperature: 0.3,
         maxTokens:   2000,
-        openAIApiKey: process.env.OPENROUTER_API_KEY ?? 'no-key',
+        apiKey: process.env.OPENROUTER_API_KEY ?? 'no-key',
         configuration: {
           baseURL:        'https://openrouter.ai/api/v1',
           defaultHeaders: {
@@ -31,7 +31,7 @@ export function getLLM(jsonMode = false): ChatOpenAI {
       model:       'google/gemini-2.0-flash-001',
       temperature: 0.7,
       maxTokens:   2000,
-      openAIApiKey: process.env.OPENROUTER_API_KEY ?? 'no-key',
+      apiKey: process.env.OPENROUTER_API_KEY ?? 'no-key',
       configuration: {
         baseURL:        'https://openrouter.ai/api/v1',
         defaultHeaders: {
