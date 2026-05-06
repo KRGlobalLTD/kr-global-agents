@@ -47,7 +47,12 @@ export async function findAnswer(question: string): Promise<string | null> {
   try {
     const answer = await supportChain.invoke({ question });
     return answer || null;
-  } catch {
+  } catch (err) {
+    void supabase.from('alerts').insert({
+      agent_name: 'CHOPPER',
+      level:      'WARNING',
+      message:    `findAnswer LLM erreur : ${err instanceof Error ? err.message.slice(0, 200) : String(err)}`,
+    });
     return null;
   }
 }
