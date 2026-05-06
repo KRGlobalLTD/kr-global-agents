@@ -16,12 +16,12 @@ Réponds de façon concise, empathique et professionnelle. Si tu n'as pas de ré
 
 const supportChain = ChatPromptTemplate.fromMessages([
   ['system', SUPPORT_SYSTEM],
-  ['human', '{question}'],
+  ['human', '{input}'],
 ]).pipe(getLLM(false)).pipe(new StringOutputParser());
 
 const contextChain = ChatPromptTemplate.fromMessages([
   ['system', SUPPORT_SYSTEM],
-  ['human', 'Question : {question}\n\nBase de connaissance :\n{context}\n\nRéponds en utilisant ces informations.'],
+  ['human', '{input}'],
 ]).pipe(getLLM(false)).pipe(new StringOutputParser());
 
 export async function findAnswer(question: string): Promise<string | null> {
@@ -36,7 +36,9 @@ export async function findAnswer(question: string): Promise<string | null> {
 
     if (results.length > 0) {
       const context = results.map(r => r.text).join('\n\n');
-      const answer  = await contextChain.invoke({ question, context });
+      const answer  = await contextChain.invoke({
+        input: `Question : ${question}\n\nBase de connaissance :\n${context}\n\nRéponds en utilisant ces informations.`,
+      });
       return answer || null;
     }
   } catch {
@@ -45,7 +47,7 @@ export async function findAnswer(question: string): Promise<string | null> {
 
   // 2. Génération LLM sans contexte Qdrant
   try {
-    const answer = await supportChain.invoke({ question });
+    const answer = await supportChain.invoke({ input: question });
     return answer || null;
   } catch (err) {
     void supabase.from('alerts').insert({
