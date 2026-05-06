@@ -21,6 +21,15 @@ import {
   markContractSigned,
   type ContractType,
 } from '@/lib/agents/chopper/contract-generator';
+import {
+  createTicket,
+  updateTicket,
+  getOpenTickets,
+  getTicketById,
+  type TicketPriority,
+} from '@/lib/agents/chopper/ticket-manager';
+import { findAnswer, addToFAQ } from '@/lib/agents/chopper/faq-engine';
+import { escalateById }         from '@/lib/agents/chopper/escalation-manager';
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -79,7 +88,14 @@ type ActionPayload =
       send?:       boolean;         // envoyer immédiatement par email
     }
   | { action: 'send_contract';   contractId: string }
-  | { action: 'sign_contract';   contractId: string };
+  | { action: 'sign_contract';   contractId: string }
+  // ---- Support client ----
+  | { action: 'answer_question'; question: string; client_email?: string }
+  | { action: 'create_ticket';   subject: string; description: string; client_email?: string; priority?: TicketPriority }
+  | { action: 'resolve_ticket';  ticket_id: string; resolution?: string; satisfaction_score?: number }
+  | { action: 'escalate';        ticket_id: string; reason?: string }
+  | { action: 'get_open_tickets' }
+  | { action: 'add_faq';         question: string; answer: string };
 
 // ---- POST ----
 
@@ -172,6 +188,53 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
       case 'sign_contract': {
         await markContractSigned(body.contractId);
+        return NextResponse.json({ success: true });
+      }
+
+      // ---- Support client ----
+
+      case 'answer_question': {
+        const answer = await findAnswer(body.question);
+        if (answer) await addToFAQ(body.question, answer);
+        return NextResponse.json({ success: true, answer, source: answer ? 'knowledge_base' : 'llm' });
+      }
+
+      case 'create_ticket': {
+        const ticket = await createTicket({
+          clientEmail: body.client_email,
+          subject:     body.subject,
+          description: body.description,
+          priority:    body.priority,
+        });
+        return NextResponse.json({ success: true, ticket });
+      }
+
+      case 'resolve_ticket': {
+        const ticket = await getTicketById(body.ticket_id);
+        if (!ticket) return NextResponse.json({ error: `Ticket ${body.ticket_id} introuvable` }, { status: 404 });
+        await updateTicket(body.ticket_id, {
+          status:            'resolved',
+          resolution:        body.resolution,
+          satisfactionScore: body.satisfaction_score,
+        });
+        return NextResponse.json({ success: true, ticket_id: body.ticket_id });
+      }
+
+      case 'escalate': {
+        await escalateById(
+          body.ticket_id,
+          body.reason ?? 'Problème complexe nécessitant intervention humaine',
+        );
+        return NextResponse.json({ success: true, escalated_to: 'Karim Hammouche' });
+      }
+
+      case 'get_open_tickets': {
+        const tickets = await getOpenTickets();
+        return NextResponse.json({ success: true, tickets, count: tickets.length });
+      }
+
+      case 'add_faq': {
+        await addToFAQ(body.question, body.answer);
         return NextResponse.json({ success: true });
       }
 

@@ -360,6 +360,15 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
   }),
 
   buildWorkflow({
+    name:       'CHOPPER — Check tickets ouverts (toutes les 2h)',
+    trigger:    scheduleTrigger(0, 0, 120),
+    taskType:   'support',
+    taskInput:  { action: 'get_open_tickets' },
+    slackUrl:   SLACK.alertes,
+    agentLabel: 'CHOPPER / Tickets Ouverts',
+  }),
+
+  buildWorkflow({
     name:       'OROCHIMARU — Health check (6h)',
     trigger:    scheduleTrigger(0, 0, 360),
     taskType:   'infrastructure',
