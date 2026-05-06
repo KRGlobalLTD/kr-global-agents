@@ -168,6 +168,22 @@ export async function callOpenRouter(
   return { raw, usage };
 }
 
+function repairJson(s: string): string {
+  // Escape literal CR/LF inside JSON string values (Gemini bug)
+  let inString = false;
+  let escaped  = false;
+  let out      = '';
+  for (const ch of s) {
+    if (escaped)          { out += ch; escaped = false; continue; }
+    if (ch === '\\')      { out += ch; escaped = true;  continue; }
+    if (ch === '"')       { inString = !inString; out += ch; continue; }
+    if (inString && ch === '\n') { out += '\\n'; continue; }
+    if (inString && ch === '\r') { out += '\\r'; continue; }
+    out += ch;
+  }
+  return out;
+}
+
 export function parseJsonSafe(raw: string): Record<string, unknown> {
   // Strip markdown code blocks (Gemini adds ```json ... ``` even in JSON mode)
   let cleaned = raw.trim()
@@ -179,7 +195,12 @@ export function parseJsonSafe(raw: string): Record<string, unknown> {
   const match = cleaned.match(/\{[\s\S]*\}/);
   if (match) cleaned = match[0];
 
+  // First attempt — raw JSON
   try { return JSON.parse(cleaned) as Record<string, unknown>; }
+  catch { /* fall through to repair */ }
+
+  // Second attempt — repair literal newlines inside strings
+  try { return JSON.parse(repairJson(cleaned)) as Record<string, unknown>; }
   catch { throw new Error(`JSON contenu invalide : ${raw.slice(0, 300)}`); }
 }
 
