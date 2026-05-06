@@ -1,7 +1,7 @@
 import { Annotation } from '@langchain/langgraph';
 import { BaseMessage } from '@langchain/core/messages';
 
-export type TaskType = 'accounting' | 'marketing' | 'email' | 'prospecting' | 'onboarding' | 'finance' | 'supervisor' | 'reporting' | 'infrastructure' | 'social' | 'research' | 'support';
+export type TaskType = 'accounting' | 'marketing' | 'email' | 'prospecting' | 'onboarding' | 'finance' | 'supervisor' | 'reporting' | 'infrastructure' | 'social' | 'research' | 'support' | 'knowledge';
 export type TaskStatus = 'pending' | 'running' | 'completed' | 'failed';
 
 export const KRGlobalState = Annotation.Root({

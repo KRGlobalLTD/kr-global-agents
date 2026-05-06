@@ -403,6 +403,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.depenses,
     agentLabel: 'TSUNADE / Dépenses Pending',
   }),
+
+  buildWorkflow({
+    name:       'BROOK — Indexation hebdomadaire (lundi 07h30)',
+    trigger:    scheduleTrigger(7, 30),
+    taskType:   'knowledge',
+    taskInput:  { action: 'weekly_index' },
+    slackUrl:   SLACK.general,
+    agentLabel: 'BROOK / Indexation hebdo',
+  }),
+
+  buildWorkflow({
+    name:       'BROOK — Nouveau document (webhook)',
+    trigger:    webhookTrigger('brook/document'),
+    taskType:   'knowledge',
+    taskInput:  { action: 'add_document' },
+    slackUrl:   SLACK.general,
+    agentLabel: 'BROOK / Nouveau document',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
