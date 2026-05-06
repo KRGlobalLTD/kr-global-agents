@@ -169,8 +169,18 @@ export async function callOpenRouter(
 }
 
 export function parseJsonSafe(raw: string): Record<string, unknown> {
-  try { return JSON.parse(raw) as Record<string, unknown>; }
-  catch { throw new Error(`JSON contenu invalide : ${raw.slice(0, 200)}`); }
+  // Strip markdown code blocks (Gemini adds ```json ... ``` even in JSON mode)
+  let cleaned = raw.trim()
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```\s*$/,        '')
+    .trim();
+
+  // Extract first JSON object if there's surrounding text
+  const match = cleaned.match(/\{[\s\S]*\}/);
+  if (match) cleaned = match[0];
+
+  try { return JSON.parse(cleaned) as Record<string, unknown>; }
+  catch { throw new Error(`JSON contenu invalide : ${raw.slice(0, 300)}`); }
 }
 
 export async function generateContent(req: ContentRequest): Promise<GeneratedContent> {
