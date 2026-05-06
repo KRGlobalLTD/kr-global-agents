@@ -5,8 +5,9 @@ import { getProspectContext, saveProspectMemory } from '@/lib/langchain/memory';
 import { findProspects, type ProspectSearchFilters } from '@/lib/agents/killua/prospect-finder';
 import { writeOutreachEmail, type ProspectProfile, type EmailType } from '@/lib/agents/killua/email-writer';
 import { runCampaignCycle, getCampaignStats }                        from '@/lib/agents/killua/campaign-manager';
+import { scrapeReddit }                                               from '@/lib/agents/killua/reddit-scraper';
 
-type KilluaAction = 'scrape_leads' | 'send_outreach' | 'track_prospect';
+type KilluaAction = 'scrape_leads' | 'send_outreach' | 'track_prospect' | 'scrape_reddit';
 
 export async function killuaNode(state: KRGlobalStateType): Promise<Partial<KRGlobalStateType>> {
   const action = (state.task_input['action'] as KilluaAction) ?? 'scrape_leads';
@@ -69,6 +70,20 @@ export async function killuaNode(state: KRGlobalStateType): Promise<Partial<KRGl
         if (!campaignId) throw new Error('campaign_id requis pour track_prospect');
         const stats = await getCampaignStats(campaignId);
         result = { stats };
+        break;
+      }
+
+      case 'scrape_reddit': {
+        const subreddit = (input['subreddit'] as string) ?? 'artificial';
+        const limit     = (input['limit']     as number) ?? 10;
+        const scraped   = await scrapeReddit(subreddit, Math.min(limit, 25));
+        result = {
+          source:    scraped.source,
+          subreddit: scraped.subreddit,
+          fetched:   scraped.posts.length,
+          saved:     scraped.saved,
+          posts:     scraped.posts.map(p => ({ title: p.title, score: p.score, url: p.url })),
+        };
         break;
       }
 

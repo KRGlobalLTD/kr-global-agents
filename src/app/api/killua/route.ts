@@ -7,6 +7,7 @@ import {
   createCampaign,
   getCampaignStats,
 } from '@/lib/agents/killua/campaign-manager';
+import { scrapeReddit } from '@/lib/agents/killua/reddit-scraper';
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -24,7 +25,8 @@ type ActionPayload =
   | { action: 'run_campaign'; campaignId?: string }
   | { action: 'create_campaign'; name: string; filters: ProspectSearchFilters }
   | { action: 'send_email'; prospectEmail: string; prospectName: string; company?: string; jobTitle?: string; industry?: string; emailType: 'initial' | 'followup1' | 'followup2' }
-  | { action: 'mark_replied'; prospectId: string };
+  | { action: 'mark_replied'; prospectId: string }
+  | { action: 'scrape_reddit'; subreddit?: string; limit?: number };
 
 // ---- POST ----
 
@@ -75,6 +77,21 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           body.emailType
         );
         return NextResponse.json({ success: true, email });
+      }
+
+      case 'scrape_reddit': {
+        const result = await scrapeReddit(
+          body.subreddit ?? 'artificial',
+          Math.min(body.limit ?? 10, 25)
+        );
+        return NextResponse.json({
+          agent_name: 'KILLUA',
+          source:     result.source,
+          subreddit:  result.subreddit,
+          fetched:    result.posts.length,
+          saved:      result.saved,
+          posts:      result.posts.map(p => ({ title: p.title, score: p.score, url: p.url })),
+        });
       }
 
       case 'mark_replied': {
