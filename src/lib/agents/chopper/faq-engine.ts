@@ -1,8 +1,9 @@
-import { recall, remember } from '@/lib/qdrant/memory';
-import { COLLECTIONS }      from '@/lib/qdrant/collections';
-import { getLLM }           from '@/lib/langchain/llm';
-import { HumanMessage, SystemMessage } from '@langchain/core/messages';
-import { createClient }     from '@supabase/supabase-js';
+import { recall, remember }    from '@/lib/qdrant/memory';
+import { COLLECTIONS }          from '@/lib/qdrant/collections';
+import { getLLM }               from '@/lib/langchain/llm';
+import { ChatPromptTemplate }   from '@langchain/core/prompts';
+import { StringOutputParser }   from '@langchain/core/output_parsers';
+import { createClient }         from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -12,6 +13,16 @@ const supabase = createClient(
 const SUPPORT_SYSTEM = `Tu es l'assistant support de KR Global Solutions Ltd (agence IA, Londres UK).
 Services : développement agents IA, automation business, cold outreach, gestion réseaux sociaux IA, consulting PME.
 Réponds de façon concise, empathique et professionnelle. Si tu n'as pas de réponse précise, dis-le clairement et propose une escalade.`;
+
+const supportChain = ChatPromptTemplate.fromMessages([
+  ['system', SUPPORT_SYSTEM],
+  ['human', '{question}'],
+]).pipe(getLLM(false)).pipe(new StringOutputParser());
+
+const contextChain = ChatPromptTemplate.fromMessages([
+  ['system', SUPPORT_SYSTEM],
+  ['human', 'Question : {question}\n\nBase de connaissance :\n{context}\n\nRéponds en utilisant ces informations.'],
+]).pipe(getLLM(false)).pipe(new StringOutputParser());
 
 export async function findAnswer(question: string): Promise<string | null> {
   if (!question.trim()) return null;
@@ -25,14 +36,8 @@ export async function findAnswer(question: string): Promise<string | null> {
 
     if (results.length > 0) {
       const context = results.map(r => r.text).join('\n\n');
-      const llm     = getLLM(false);
-      const response = await llm.invoke([
-        new SystemMessage(SUPPORT_SYSTEM),
-        new HumanMessage(
-          `Question : ${question}\n\nBase de connaissance :\n${context}\n\nRéponds en utilisant ces informations.`
-        ),
-      ]);
-      return typeof response.content === 'string' ? response.content : null;
+      const answer  = await contextChain.invoke({ question, context });
+      return answer || null;
     }
   } catch {
     // Qdrant indisponible — fallback LLM direct
@@ -40,12 +45,8 @@ export async function findAnswer(question: string): Promise<string | null> {
 
   // 2. Génération LLM sans contexte Qdrant
   try {
-    const llm      = getLLM(false);
-    const response = await llm.invoke([
-      new SystemMessage(SUPPORT_SYSTEM),
-      new HumanMessage(question),
-    ]);
-    return typeof response.content === 'string' ? response.content : null;
+    const answer = await supportChain.invoke({ question });
+    return answer || null;
   } catch {
     return null;
   }
