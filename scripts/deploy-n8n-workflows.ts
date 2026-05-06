@@ -268,7 +268,7 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     name:       'KILLUA — Prospecting quotidien',
     trigger:    scheduleTrigger(10, 0),
     taskType:   'prospecting',
-    taskInput:  { action: 'scrape_leads' },
+    taskInput:  { action: 'run_campaign' },
     slackUrl:   SLACK.prospects,
     agentLabel: 'KILLUA / Prospecting',
   }),

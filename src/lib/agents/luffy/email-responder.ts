@@ -11,7 +11,13 @@ const resend = new Resend(process.env.RESEND_API_KEY!);
 
 const FROM     = 'LUFFY · KR Global <agent@krglobalsolutionsltd.com>';
 const REPLYTO  = 'agent@krglobalsolutionsltd.com';
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_RE = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/;
+
+// Zoho retourne parfois "<email@domain.com>" avec chevrons — on les retire
+function extractEmail(raw: string): string {
+  const bracketed = raw.match(/<([^>]+)>/);
+  return bracketed ? bracketed[1].trim() : raw.trim();
+}
 
 // ---- Alerte Slack #prospects ----
 
@@ -130,8 +136,9 @@ export async function respondToEmail(
   email: IncomingEmail,
   result: ClassificationResult
 ): Promise<void> {
-  // Adresse invalide → skip silencieux (Resend rejetterait avec "Invalid to field")
-  if (!EMAIL_RE.test(email.fromEmail)) {
+  // Normalise l'adresse (retire chevrons Zoho) puis valide
+  const cleanEmail = extractEmail(email.fromEmail);
+  if (!EMAIL_RE.test(cleanEmail)) {
     await supabase.from('alerts').insert({
       agent_name: 'LUFFY',
       level:      'INFO',
@@ -139,6 +146,7 @@ export async function respondToEmail(
     });
     return;
   }
+  email = { ...email, fromEmail: cleanEmail };
 
   // Spam → aucune réponse
   if (result.classification === 'spam') {
