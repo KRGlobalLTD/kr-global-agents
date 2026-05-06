@@ -342,6 +342,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
   }),
 
   buildWorkflow({
+    name:       'KILLUA — Scraping Reddit r/digitalnomad (16h00)',
+    trigger:    scheduleTrigger(16, 0),
+    taskType:   'prospecting',
+    taskInput:  { action: 'scrape_reddit', subreddit: 'digitalnomad', limit: 10 },
+    slackUrl:   SLACK.prospects,
+    agentLabel: 'KILLUA / Reddit r/digitalnomad',
+  }),
+
+  buildWorkflow({
+    name:       'KILLUA — Scraping Reddit r/freelance (16h30)',
+    trigger:    scheduleTrigger(16, 30),
+    taskType:   'prospecting',
+    taskInput:  { action: 'scrape_reddit', subreddit: 'freelance', limit: 10 },
+    slackUrl:   SLACK.prospects,
+    agentLabel: 'KILLUA / Reddit r/freelance',
+  }),
+
+  buildWorkflow({
     name:       'OROCHIMARU — Health check (6h)',
     trigger:    scheduleTrigger(0, 0, 360),
     taskType:   'infrastructure',
