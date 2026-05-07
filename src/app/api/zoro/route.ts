@@ -226,9 +226,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         const now   = new Date();
         const month = (body['month'] as number) ?? now.getMonth() + 1;
         const year  = (body['year']  as number) ?? now.getFullYear();
-        const csv   = await exportXeroCSV(month, year);
+        const csv       = await exportXeroCSV(month, year);
         const readiness = await getXeroReadinessReport();
         return NextResponse.json({ agent_name: 'ZORO', csv, readiness, month, year });
+      }
+
+      case 'xero_readiness': {
+        const readiness = await getXeroReadinessReport();
+        return NextResponse.json({ agent_name: 'ZORO', readiness });
       }
 
       // ── Google Sheets ─────────────────────────────────────────────────────

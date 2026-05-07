@@ -89,7 +89,6 @@ async function callOpenRouter(prompt: string, text: string): Promise<string> {
         { role: 'system', content: prompt },
         { role: 'user',   content: text.slice(0, 8000) },
       ],
-      response_format: { type: 'json_object' },
       temperature: 0,
     }),
   });
@@ -97,6 +96,16 @@ async function callOpenRouter(prompt: string, text: string): Promise<string> {
   if (!res.ok) throw new Error(`OpenRouter extraction ${res.status}`);
   const data = (await res.json()) as { choices: Array<{ message: { content: string } }> };
   return data.choices[0]?.message.content ?? 'null';
+}
+
+function extractJsonFromText(raw: string): string {
+  // Strip markdown code fences if present
+  const stripped = raw.replace(/```(?:json)?\s*/gi, '').replace(/```\s*/g, '').trim();
+  // Find first { ... } block
+  const start = stripped.indexOf('{');
+  const end   = stripped.lastIndexOf('}');
+  if (start !== -1 && end > start) return stripped.slice(start, end + 1);
+  return stripped;
 }
 
 export async function extractInvoiceFromText(text: string): Promise<ExtractedInvoice | null> {
@@ -116,7 +125,7 @@ export async function extractInvoiceFromText(text: string): Promise<ExtractedInv
 
   let parsed: ExtractedInvoice | null;
   try {
-    parsed = JSON.parse(raw) as ExtractedInvoice | null;
+    parsed = JSON.parse(extractJsonFromText(raw)) as ExtractedInvoice | null;
   } catch {
     return null;
   }
