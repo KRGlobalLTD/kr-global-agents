@@ -44,7 +44,7 @@ export async function nejiNode(state: KRGlobalStateType): Promise<Partial<KRGlob
         const analysis = await nejiChain.invoke({
           context: '',
           input: `Génère un résumé exécutif du tableau de bord analytics KR Global (${period}) :
-Contenu : ${JSON.stringify({ total_published: content.total_published, total_views: content.total_views, avg_engagement_rate: content.avg_engagement_rate })}
+Contenu : ${JSON.stringify({ total_published: content.total_published, total_views: content.total_views, avg_engagement_rate: content.avg_engagement_rate, by_type: content.by_type })}
 Funnel : ${JSON.stringify({ overall_conversion: funnel.overall_conversion, clients: funnel.stages.at(-1)?.count, total_revenue: funnel.total_revenue })}
 Croissance : highlights=${JSON.stringify(growth.highlights)}, alerts=${JSON.stringify(growth.alerts)}
 Donne 3 recommandations actionnables priorisées.`,
@@ -125,7 +125,7 @@ Donne 3 recommandations actionnables priorisées.`,
 PERFORMANCES CONTENU :
 - Publiés : ${content.total_published} | Vues : ${content.total_views} | Clics : ${content.total_clicks} | Conversions : ${content.total_conversions}
 - Engagement moyen : ${content.avg_engagement_rate}%
-- Par plateforme : ${JSON.stringify(content.by_platform)}
+- Par type : ${JSON.stringify(content.by_type)}
 
 ENTONNOIR CONVERSION :
 ${content.total_published > 0 ? funnel.stages.map(s => `- ${s.name}: ${s.count} (${s.conversion}%)`).join('\n') : '- Pas de données suffisantes'}

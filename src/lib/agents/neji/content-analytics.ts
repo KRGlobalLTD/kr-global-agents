@@ -10,7 +10,7 @@ export type Period = 'week' | 'month' | 'quarter';
 export interface ContentPerformance {
   content_id:      string;
   titre:           string;
-  plateforme:      string;
+  type:            string;   // 'article' | 'post' | 'strategie'
   vues:            number;
   clics:           number;
   conversions:     number;
@@ -26,7 +26,7 @@ export interface ContentAnalyticsSummary {
   total_conversions:   number;
   avg_engagement_rate: number;
   top_content:         ContentPerformance[];
-  by_platform:         Record<string, { count: number; views: number; clicks: number }>;
+  by_type:             Record<string, { count: number; views: number; clicks: number }>;
 }
 
 function periodToDate(period: Period): Date {
@@ -43,7 +43,7 @@ export async function analyzeContentPerformance(period: Period = 'month'): Promi
 
   const { data: contentData, error: contentError } = await supabase
     .from('content')
-    .select('id, titre, plateforme, statut, created_at')
+    .select('id, titre, type, statut, created_at')
     .eq('statut', 'publié')
     .gte('created_at', since);
 
@@ -74,7 +74,7 @@ export async function analyzeContentPerformance(period: Period = 'month'): Promi
     return {
       content_id:      c.id as string,
       titre:           c.titre as string,
-      plateforme:      c.plateforme as string,
+      type:            (c.type as string) || 'post',
       vues,
       clics,
       conversions,
@@ -90,13 +90,13 @@ export async function analyzeContentPerformance(period: Period = 'month'): Promi
     ? Math.round(enriched.reduce((s, c) => s + c.engagement_rate, 0) / enriched.length * 100) / 100
     : 0;
 
-  const byPlatform: Record<string, { count: number; views: number; clicks: number }> = {};
+  const byType: Record<string, { count: number; views: number; clicks: number }> = {};
   for (const c of enriched) {
-    const p = (c.plateforme as string) || 'unknown';
-    if (!byPlatform[p]) byPlatform[p] = { count: 0, views: 0, clicks: 0 };
-    byPlatform[p].count++;
-    byPlatform[p].views  += c.vues;
-    byPlatform[p].clicks += c.clics;
+    const t = c.type || 'unknown';
+    if (!byType[t]) byType[t] = { count: 0, views: 0, clicks: 0 };
+    byType[t].count++;
+    byType[t].views  += c.vues;
+    byType[t].clicks += c.clics;
   }
 
   const topContent = [...enriched].sort((a, b) => b.vues - a.vues).slice(0, 5);
@@ -109,6 +109,6 @@ export async function analyzeContentPerformance(period: Period = 'month'): Promi
     total_conversions:   totalConversions,
     avg_engagement_rate: avgEngagement,
     top_content:         topContent,
-    by_platform:         byPlatform,
+    by_type:             byType,
   };
 }

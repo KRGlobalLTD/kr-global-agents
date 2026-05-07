@@ -42,7 +42,7 @@ export async function analyzeConversionFunnel(period: Period = 'month'): Promise
   const [prospectsRes, clientsRes, txRes] = await Promise.allSettled([
     supabase
       .from('prospects')
-      .select('classification, response_sent_at')
+      .select('status, response_sent_at')
       .gte('created_at', since),
     supabase
       .from('clients')
@@ -61,8 +61,8 @@ export async function analyzeConversionFunnel(period: Period = 'month'): Promise
   const txData       = txRes.status       === 'fulfilled' ? (txRes.value.data        ?? [])  : [];
 
   const totalProspects = prospects.length;
-  const hotProspects   = prospects.filter(p => p.classification === 'prospect_chaud').length;
-  const coldProspects  = prospects.filter(p => p.classification === 'prospect_froid').length;
+  const hotProspects   = prospects.filter(p => p.status === 'prospect_chaud').length;
+  const coldProspects  = prospects.filter(p => p.status === 'prospect_froid').length;
   const responded      = prospects.filter(p => (p.response_sent_at as string | null)).length;
   const clients        = clientsCount;
 
