@@ -50,23 +50,31 @@ export interface ExtractedInvoice {
   category:         string;
 }
 
-const EXTRACTION_PROMPT = `You are a financial document parser. Extract invoice/receipt data from the following text.
-Return ONLY valid JSON (no markdown, no explanation):
+const EXTRACTION_PROMPT = `You are a financial document parser for KR Global Solutions Ltd.
+Extract invoice/receipt/billing data from the text below.
+
+RULES:
+- ALWAYS return a JSON object — never return null, never return plain text
+- If some fields are unclear, make your best guess based on context
+- Only return {"provider_name": null} if the text has ZERO financial content (e.g. a recipe or news article)
+- Amounts must be positive numbers (strip currency symbols)
+- Dates must be YYYY-MM-DD format (use today if unclear)
+- Category must be one of: AI, Infrastructure, Domains, SaaS, Banking, Marketing, Operations, Taxes, Other
+
+Return ONLY this JSON (no markdown, no explanation):
 {
-  "provider_name": "exact company name",
+  "provider_name": "company name",
   "invoice_number": "INV-XXX or null",
-  "amount": 99.99,
+  "amount": 29.00,
   "currency": "USD",
-  "invoice_date": "YYYY-MM-DD",
-  "due_date": "YYYY-MM-DD or null",
+  "invoice_date": "2026-05-01",
+  "due_date": "2026-06-01 or null",
   "is_recurring": true,
   "billing_frequency": "monthly",
   "payment_method": "Credit Card or null",
   "vat_amount": 0,
   "category": "AI"
-}
-Categories: AI, Infrastructure, Domains, SaaS, Banking, Marketing, Operations, Taxes, Other
-If no invoice/payment detected, return null.`;
+}`;
 
 function detectProviderFromText(text: string): { name: string; category: string } | null {
   const lower = text.toLowerCase();
