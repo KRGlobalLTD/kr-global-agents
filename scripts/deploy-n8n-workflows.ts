@@ -637,6 +637,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.contenu,
     agentLabel: 'TEMARI / Contenu Immobilier',
   }),
+
+  // ── HINATA — Vertical EdTech & Formation ──────────────────────────────────
+  buildWorkflow({
+    name:       'HINATA — Prospecting EdTech quotidien (11h30)',
+    trigger:    scheduleTrigger(11, 30),
+    taskType:   'edtech',
+    taskInput:  { action: 'run_campaign' },
+    slackUrl:   SLACK.prospects,
+    agentLabel: 'HINATA / Prospecting EdTech',
+  }),
+  buildWorkflow({
+    name:       'HINATA — Contenu EdTech hebdo (vendredi 08h00)',
+    trigger:    scheduleTrigger(8, 0),
+    taskType:   'edtech',
+    taskInput:  { action: 'content_batch', count: 3 },
+    slackUrl:   SLACK.contenu,
+    agentLabel: 'HINATA / Contenu EdTech',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
