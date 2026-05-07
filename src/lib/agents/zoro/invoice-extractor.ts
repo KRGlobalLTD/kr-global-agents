@@ -59,13 +59,13 @@ Extract invoice/receipt/billing data from the user message.
 RULES:
 - ALWAYS return a JSON object — NEVER return null or plain text
 - If some fields are unclear, make your best guess
-- Only return {"provider_name": null} if the text has ZERO financial content (a recipe, sports article, etc.)
+- Only return {{"provider_name": null}} if the text has ZERO financial content (a recipe, sports article, etc.)
 - Amounts must be positive numbers (no currency symbols)
 - Dates must be YYYY-MM-DD format (use today if unclear)
 - Category: AI, Infrastructure, Domains, SaaS, Banking, Marketing, Operations, Taxes, Other
 
 Return ONLY valid JSON — no markdown, no explanation:
-{
+{{
   "provider_name": "company name",
   "invoice_number": "INV-XXX or null",
   "amount": 29.00,
@@ -77,7 +77,7 @@ Return ONLY valid JSON — no markdown, no explanation:
   "payment_method": "Credit Card or null",
   "vat_amount": 0,
   "category": "AI"
-}`;
+}}`;
 
 const extractionChain = ChatPromptTemplate.fromMessages([
   ['system', SYSTEM_PROMPT],
