@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  addDocument, searchKnowledge, getDocument, listDocuments,
+  addDocument, searchKnowledge, getDocument, listDocuments, ragContext,
   type KnowledgeCategory,
 } from '@/lib/agents/brook/knowledge-manager';
 import {
@@ -142,6 +142,25 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
         const pv = await rollback(agent, version);
         return NextResponse.json({ agent_name: 'BROOK', prompt_version: pv });
+      }
+
+      case 'answer_question': {
+        const question = body['question'] as string | undefined;
+        if (!question) return NextResponse.json({ error: 'question requise' }, { status: 400 });
+
+        const { brookChain } = await import('@/lib/langchain/chains/brook-chain');
+        const context = await ragContext(question, 4);
+        const answer  = await brookChain.invoke({
+          input:   question,
+          context: context ? `Contexte base de connaissance KR Global :\n\n${context}` : '',
+        });
+
+        return NextResponse.json({
+          agent_name:   'BROOK',
+          question,
+          answer,
+          sources_found: context.length > 0,
+        });
       }
 
       default:
