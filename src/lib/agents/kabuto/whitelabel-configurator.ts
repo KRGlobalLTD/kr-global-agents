@@ -18,7 +18,7 @@ export interface WhitelabelConfig {
 }
 
 export async function setupBrand(input: {
-  partner_id:    string;
+  partner_id?:   string;
   brand_name:    string;
   primary_color?: string;
   logo_url?:     string;
@@ -28,7 +28,7 @@ export async function setupBrand(input: {
   const { data, error } = await supabase
     .from('whitelabel_configs')
     .insert({
-      partner_id:    input.partner_id,
+      ...(input.partner_id ? { partner_id: input.partner_id } : {}),
       brand_name:    input.brand_name,
       primary_color: input.primary_color ?? '#0066CC',
       logo_url:      input.logo_url      ?? null,

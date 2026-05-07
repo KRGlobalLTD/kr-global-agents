@@ -32,9 +32,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       case 'setup_brand': {
         const partnerId = body['partner_id'] as string | undefined;
         const brandName = body['brand_name'] as string | undefined;
-        if (!partnerId || !brandName) return NextResponse.json({ error: 'partner_id et brand_name requis' }, { status: 400 });
+        if (!brandName) return NextResponse.json({ error: 'brand_name requis' }, { status: 400 });
         const config = await setupBrand({
-          partner_id:    partnerId,
+          partner_id:    partnerId ?? '',
           brand_name:    brandName,
           primary_color: body['primary_color'] as string | undefined,
           logo_url:      body['logo_url']      as string | undefined,

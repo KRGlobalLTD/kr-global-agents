@@ -43,7 +43,7 @@ export async function kabutoNode(state: KRGlobalStateType): Promise<Partial<KRGl
 
       case 'setup_brand': {
         const config = await setupBrand({
-          partner_id:    (input['partner_id']    as string),
+          partner_id:    (input['partner_id']    as string | undefined),
           brand_name:    (input['brand_name']    as string),
           primary_color: (input['primary_color'] as string | undefined),
           logo_url:      (input['logo_url']      as string | undefined),
