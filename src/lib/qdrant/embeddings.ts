@@ -4,11 +4,11 @@
  *   OPENROUTER_API_KEY → openai/text-embedding-3-small (1536 dim)
  */
 
-const JINA_MODEL = 'jina-embeddings-v2-base-multilingual';
+const JINA_MODEL = 'jina-embeddings-v3';
 const OR_MODEL   = 'openai/text-embedding-3-small';
 
 // Taille du vecteur — dépend du provider actif
-export const VECTOR_DIM: number = process.env.JINA_API_KEY ? 768 : 1536;
+export const VECTOR_DIM: number = process.env.JINA_API_KEY ? 1024 : 1536;
 
 interface EmbedData {
   embedding: number[];
@@ -30,6 +30,7 @@ async function jinaEmbed(texts: string[]): Promise<number[][]> {
     body: JSON.stringify({
       model:          JINA_MODEL,
       input:          texts,
+      task:           'retrieval.passage',
       embedding_type: 'float',
     }),
   });
