@@ -673,6 +673,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.general,
     agentLabel: 'KIBA / Stats Pipeline',
   }),
+
+  // ── KABUTO — White Label ──────────────────────────────────────────────────
+  buildWorkflow({
+    name:       'KABUTO — Stats white label (lundi 09h00)',
+    trigger:    scheduleTrigger(9, 0),
+    taskType:   'whitelabel',
+    taskInput:  { action: 'get_stats' },
+    slackUrl:   SLACK.revenus,
+    agentLabel: 'KABUTO / Stats White Label',
+  }),
+  buildWorkflow({
+    name:       'KABUTO — Rapports mensuels clients (1er du mois 10h00)',
+    trigger:    scheduleTrigger(10, 0),
+    taskType:   'whitelabel',
+    taskInput:  { action: 'get_stats' },
+    slackUrl:   SLACK.revenus,
+    agentLabel: 'KABUTO / Rapports Mensuels',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
