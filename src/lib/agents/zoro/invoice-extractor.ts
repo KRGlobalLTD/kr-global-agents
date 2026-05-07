@@ -1,4 +1,10 @@
 // AI-powered invoice data extraction using OpenRouter
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+);
 
 const PROVIDER_PATTERNS: Record<string, { category: string; normalized: string }> = {
   'openai':       { category: 'AI',             normalized: 'OpenAI'        },
@@ -127,9 +133,13 @@ export async function extractInvoiceFromText(text: string): Promise<ExtractedInv
   let raw: string;
   try {
     raw = await callOpenRouter(EXTRACTION_PROMPT, text);
-  } catch {
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    void supabase.from('alerts').insert({ agent_name: 'ZORO', level: 'WARNING', message: `Invoice extraction LLM error: ${msg.slice(0, 200)}` });
     return null;
   }
+
+  void supabase.from('alerts').insert({ agent_name: 'ZORO', level: 'INFO', message: `Invoice extraction raw: ${raw.slice(0, 300)}` });
 
   let parsed: ExtractedInvoice | null;
   try {
