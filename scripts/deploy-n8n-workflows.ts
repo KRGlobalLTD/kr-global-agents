@@ -529,6 +529,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.general,
     agentLabel: 'ZORO / Sheets Dashboard',
   }),
+
+  // ── SHIKAMARU — Pricing ────────────────────────────────────────────────────
+  buildWorkflow({
+    name:       'SHIKAMARU — Analyse tarifaire hebdo (lundi 11h00)',
+    trigger:    scheduleTrigger(11, 0),
+    taskType:   'pricing',
+    taskInput:  { action: 'analyze_market' },
+    slackUrl:   SLACK.general,
+    agentLabel: 'SHIKAMARU / Analyse tarifaire',
+  }),
+  buildWorkflow({
+    name:       'SHIKAMARU — Devis expirés (quotidien 08h30)',
+    trigger:    scheduleTrigger(8, 30),
+    taskType:   'pricing',
+    taskInput:  { action: 'check_expired' },
+    slackUrl:   SLACK.prospects,
+    agentLabel: 'SHIKAMARU / Devis expirés',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
