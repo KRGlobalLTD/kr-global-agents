@@ -565,6 +565,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.general,
     agentLabel: 'KAKASHI / Check-ins',
   }),
+
+  // ── JIRAIYA — Upsell ──────────────────────────────────────────────────────
+  buildWorkflow({
+    name:       'JIRAIYA — Détection opportunités upsell (vendredi 14h00)',
+    trigger:    scheduleTrigger(14, 0),
+    taskType:   'upsell',
+    taskInput:  { action: 'detect_opportunities' },
+    slackUrl:   SLACK.revenus,
+    agentLabel: 'JIRAIYA / Détection upsell',
+  }),
+  buildWorkflow({
+    name:       'JIRAIYA — Campagne upsell mensuelle (1er du mois 11h00)',
+    trigger:    scheduleTrigger(11, 0),
+    taskType:   'upsell',
+    taskInput:  { action: 'run_campaign' },
+    slackUrl:   SLACK.revenus,
+    agentLabel: 'JIRAIYA / Campagne upsell',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
