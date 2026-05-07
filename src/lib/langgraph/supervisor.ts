@@ -24,6 +24,7 @@ import { kakashiNode }     from './agents/kakashi';
 import { jiraiyaNode }    from './agents/jiraiya';
 import { sasukeNode }     from './agents/sasuke';
 import { narutoNode }     from './agents/naruto';
+import { temariNode }     from './agents/temari';
 
 // ── Routing ───────────────────────────────────────────────────────────────────
 
@@ -50,6 +51,7 @@ const TASK_AGENT: Record<TaskType, string> = {
   upsell:         'jiraiya',
   saas:           'sasuke',
   ecommerce:      'naruto',
+  immo:           'temari',
 };
 
 // ── Supervisor node ───────────────────────────────────────────────────────────
@@ -109,6 +111,7 @@ const graph = new StateGraph(KRGlobalState)
   .addNode('jiraiya',    jiraiyaNode)
   .addNode('sasuke',     sasukeNode)
   .addNode('naruto',     narutoNode)
+  .addNode('temari',     temariNode)
   .addEdge(START, 'supervisor')
   .addConditionalEdges('supervisor', selectAgent, {
     zoro:      'zoro',
@@ -133,6 +136,7 @@ const graph = new StateGraph(KRGlobalState)
     jiraiya:     'jiraiya',
     sasuke:      'sasuke',
     naruto:      'naruto',
+    temari:      'temari',
   })
   .addEdge('zoro',      END)
   .addEdge('nami',      END)
@@ -155,7 +159,8 @@ const graph = new StateGraph(KRGlobalState)
   .addEdge('kakashi',    END)
   .addEdge('jiraiya',   END)
   .addEdge('sasuke',    END)
-  .addEdge('naruto',    END);
+  .addEdge('naruto',    END)
+  .addEdge('temari',    END);
 
 export const hashirama = graph.compile();
 

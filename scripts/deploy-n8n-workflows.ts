@@ -619,6 +619,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.contenu,
     agentLabel: 'NARUTO / Contenu E-Commerce',
   }),
+
+  // ── TEMARI — Vertical Immobilier ──────────────────────────────────────────
+  buildWorkflow({
+    name:       'TEMARI — Prospecting immobilier quotidien (11h00)',
+    trigger:    scheduleTrigger(11, 0),
+    taskType:   'immo',
+    taskInput:  { action: 'run_campaign' },
+    slackUrl:   SLACK.prospects,
+    agentLabel: 'TEMARI / Prospecting Immobilier',
+  }),
+  buildWorkflow({
+    name:       'TEMARI — Contenu immobilier hebdo (jeudi 08h00)',
+    trigger:    scheduleTrigger(8, 0),
+    taskType:   'immo',
+    taskInput:  { action: 'content_batch', count: 3 },
+    slackUrl:   SLACK.contenu,
+    agentLabel: 'TEMARI / Contenu Immobilier',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
