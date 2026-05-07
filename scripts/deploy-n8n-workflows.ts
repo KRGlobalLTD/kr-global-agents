@@ -601,6 +601,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.contenu,
     agentLabel: 'SASUKE / Contenu SaaS',
   }),
+
+  // ── NARUTO — Vertical E-Commerce ──────────────────────────────────────────
+  buildWorkflow({
+    name:       'NARUTO — Prospecting e-commerce quotidien (10h30)',
+    trigger:    scheduleTrigger(10, 30),
+    taskType:   'ecommerce',
+    taskInput:  { action: 'run_campaign' },
+    slackUrl:   SLACK.prospects,
+    agentLabel: 'NARUTO / Prospecting E-Commerce',
+  }),
+  buildWorkflow({
+    name:       'NARUTO — Contenu e-commerce hebdo (mercredi 08h00)',
+    trigger:    scheduleTrigger(8, 0),
+    taskType:   'ecommerce',
+    taskInput:  { action: 'content_batch', count: 3 },
+    slackUrl:   SLACK.contenu,
+    agentLabel: 'NARUTO / Contenu E-Commerce',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
