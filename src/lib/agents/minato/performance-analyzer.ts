@@ -41,9 +41,9 @@ export async function analyzeAgent(
 
   const { data, error } = await supabase
     .from('agent_tasks')
-    .select('status, task_input, error, created_at, completed_at')
+    .select('status, task_input, error, started_at, completed_at')
     .eq('agent_name', agentName.toUpperCase())
-    .gte('created_at', since.toISOString());
+    .gte('started_at', since.toISOString());
 
   if (error) throw new Error(`agent_tasks query: ${error.message}`);
 
@@ -53,8 +53,8 @@ export async function analyzeAgent(
   const total     = tasks.length;
 
   const durations = tasks
-    .filter(t => t.completed_at && t.created_at)
-    .map(t => new Date(t.completed_at as string).getTime() - new Date(t.created_at as string).getTime())
+    .filter(t => t.completed_at && t.started_at)
+    .map(t => new Date(t.completed_at as string).getTime() - new Date(t.started_at as string).getTime())
     .filter(d => d > 0);
 
   const avg_duration_ms = durations.length
@@ -90,7 +90,7 @@ export async function getFailurePatterns(
     .select('task_input, error')
     .eq('agent_name', agentName.toUpperCase())
     .eq('status', 'failed')
-    .gte('created_at', since.toISOString())
+    .gte('started_at', since.toISOString())
     .limit(limit);
 
   if (error) throw new Error(`getFailurePatterns: ${error.message}`);
@@ -104,7 +104,7 @@ export async function analyzeAllAgents(period: Period = 'week'): Promise<AgentMe
   const { data } = await supabase
     .from('agent_tasks')
     .select('agent_name')
-    .gte('created_at', periodToDate(period).toISOString());
+    .gte('started_at', periodToDate(period).toISOString());
 
   const agents = [...new Set((data ?? []).map(r => r.agent_name as string))].filter(Boolean);
 
