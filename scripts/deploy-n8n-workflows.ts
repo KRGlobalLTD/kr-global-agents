@@ -457,6 +457,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.general,
     agentLabel: 'NEJI / Dashboard mensuel',
   }),
+
+  buildWorkflow({
+    name:       'GAARA — Veille marché Maroc (mercredi 09h00)',
+    trigger:    scheduleTrigger(9, 0),
+    taskType:   'maroc',
+    taskInput:  { action: 'research_market' },
+    slackUrl:   SLACK.prospects,
+    agentLabel: 'GAARA / Veille Maroc',
+  }),
+
+  buildWorkflow({
+    name:       'GAARA — Analyse secteur BPO Maroc (lundi 10h30)',
+    trigger:    scheduleTrigger(10, 30),
+    taskType:   'maroc',
+    taskInput:  { action: 'analyze_sector', sector: 'BPO / Centres d\'appels' },
+    slackUrl:   SLACK.prospects,
+    agentLabel: 'GAARA / Secteur BPO',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
