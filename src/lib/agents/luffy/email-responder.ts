@@ -19,6 +19,16 @@ function extractEmail(raw: string): string {
   return bracketed ? bracketed[1].trim() : raw.trim();
 }
 
+// Resend transmet le sujet en header HTTP (ByteString) — chars > 255 invalides
+function sanitizeAscii(str: string): string {
+  return str
+    .replace(/[–—]/g, '-')   // en-dash, em-dash → hyphen
+    .replace(/[“”]/g, '"')   // curly double quotes → straight
+    .replace(/[‘’]/g, "'")   // curly single quotes → straight
+    .replace(/[…]/g, '...')        // ellipsis → three dots
+    .replace(/[^\x00-\xFF]/g, '');      // strip remaining non-Latin-1
+}
+
 // ---- Alerte Slack #prospects ----
 
 async function alertProspectsChaud(
@@ -146,7 +156,7 @@ export async function respondToEmail(
     });
     return;
   }
-  email = { ...email, fromEmail: cleanEmail };
+  email = { ...email, fromEmail: cleanEmail, subject: sanitizeAscii(email.subject) };
 
   // Spam → aucune réponse
   if (result.classification === 'spam') {
