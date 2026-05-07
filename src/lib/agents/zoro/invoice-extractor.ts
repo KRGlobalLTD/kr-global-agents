@@ -122,6 +122,24 @@ function extractJsonFromText(raw: string): string {
   return stripped;
 }
 
+export async function debugExtractRaw(text: string): Promise<{ hasSignal: boolean; raw: string; parsed: unknown }> {
+  const hasSignal = [
+    'invoice', 'receipt', 'billing', 'payment', 'amount', 'total', 'subscription',
+    '$', '£', '€', 'usd', 'gbp', 'eur', 'charged', 'due',
+  ].some(kw => text.toLowerCase().includes(kw));
+
+  let raw = '(not called)';
+  let parsed: unknown = null;
+
+  if (hasSignal) {
+    raw    = await callOpenRouter(EXTRACTION_PROMPT, text);
+    const jsonStr = extractJsonFromText(raw);
+    try { parsed = JSON.parse(jsonStr); } catch { parsed = { parseError: true, jsonStr }; }
+  }
+
+  return { hasSignal, raw, parsed };
+}
+
 export async function extractInvoiceFromText(text: string): Promise<ExtractedInvoice | null> {
   const hasFinanceSignal = [
     'invoice', 'receipt', 'billing', 'payment', 'amount', 'total', 'subscription',
