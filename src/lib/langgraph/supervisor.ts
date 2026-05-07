@@ -29,6 +29,7 @@ import { hinataNode }     from './agents/hinata';
 import { kibaNode }       from './agents/kiba';
 import { kabutoNode }     from './agents/kabuto';
 import { madaraNode }     from './agents/madara';
+import { nagatoNode }     from './agents/nagato';
 
 // ── Routing ───────────────────────────────────────────────────────────────────
 
@@ -60,6 +61,7 @@ const TASK_AGENT: Record<TaskType, string> = {
   partners:       'kiba',
   whitelabel:     'kabuto',
   erp:            'madara',
+  platform:       'nagato',
 };
 
 // ── Supervisor node ───────────────────────────────────────────────────────────
@@ -124,6 +126,7 @@ const graph = new StateGraph(KRGlobalState)
   .addNode('kiba',       kibaNode)
   .addNode('kabuto',     kabutoNode)
   .addNode('madara',     madaraNode)
+  .addNode('nagato',     nagatoNode)
   .addEdge(START, 'supervisor')
   .addConditionalEdges('supervisor', selectAgent, {
     zoro:      'zoro',
@@ -153,6 +156,7 @@ const graph = new StateGraph(KRGlobalState)
     kiba:        'kiba',
     kabuto:      'kabuto',
     madara:      'madara',
+    nagato:      'nagato',
   })
   .addEdge('zoro',      END)
   .addEdge('nami',      END)
@@ -180,7 +184,8 @@ const graph = new StateGraph(KRGlobalState)
   .addEdge('hinata',    END)
   .addEdge('kiba',      END)
   .addEdge('kabuto',    END)
-  .addEdge('madara',    END);
+  .addEdge('madara',    END)
+  .addEdge('nagato',    END);
 
 export const hashirama = graph.compile();
 

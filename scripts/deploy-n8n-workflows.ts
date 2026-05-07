@@ -709,6 +709,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.general,
     agentLabel: 'MADARA / Dashboard Hebdo',
   }),
+
+  // ── NAGATO — SaaS Multi-Tenant ────────────────────────────────────────────
+  buildWorkflow({
+    name:       'NAGATO — Dashboard plateforme SaaS (lundi 09h30)',
+    trigger:    scheduleTrigger(9, 30),
+    taskType:   'platform',
+    taskInput:  { action: 'get_dashboard' },
+    slackUrl:   SLACK.general,
+    agentLabel: 'NAGATO / Dashboard SaaS',
+  }),
+  buildWorkflow({
+    name:       'NAGATO — Risques churn tenants (mercredi 10h00)',
+    trigger:    scheduleTrigger(10, 0),
+    taskType:   'platform',
+    taskInput:  { action: 'churn_risk' },
+    slackUrl:   SLACK.alertes,
+    agentLabel: 'NAGATO / Churn Risk',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
