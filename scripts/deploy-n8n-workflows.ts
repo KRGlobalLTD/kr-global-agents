@@ -493,6 +493,42 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.prospects,
     agentLabel: 'SAKURA / Secteur Finance FR',
   }),
+
+  buildWorkflow({
+    name:       'ZORO — Surveillance emails factures (toutes les 2h)',
+    trigger:    scheduleTrigger(6, 0),
+    taskType:   'accounting',
+    taskInput:  { action: 'monitor_emails' },
+    slackUrl:   SLACK.depenses,
+    agentLabel: 'ZORO / Email Monitor',
+  }),
+
+  buildWorkflow({
+    name:       'ZORO — Rapport coûts IA quotidien (18h00)',
+    trigger:    scheduleTrigger(18, 0),
+    taskType:   'accounting',
+    taskInput:  { action: 'ai_cost_report' },
+    slackUrl:   SLACK.depenses,
+    agentLabel: 'ZORO / AI Cost Report',
+  }),
+
+  buildWorkflow({
+    name:       'ZORO — Check renouvellements abonnements (lundi 08h00)',
+    trigger:    scheduleTrigger(8, 0),
+    taskType:   'accounting',
+    taskInput:  { action: 'check_renewals', days_ahead: 14 },
+    slackUrl:   SLACK.depenses,
+    agentLabel: 'ZORO / Subscription Renewals',
+  }),
+
+  buildWorkflow({
+    name:       'ZORO — Mise à jour Google Sheets (dimanche 20h00)',
+    trigger:    scheduleTrigger(20, 0),
+    taskType:   'accounting',
+    taskInput:  { action: 'update_sheets' },
+    slackUrl:   SLACK.general,
+    agentLabel: 'ZORO / Sheets Dashboard',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
