@@ -421,6 +421,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.general,
     agentLabel: 'BROOK / Nouveau document',
   }),
+
+  buildWorkflow({
+    name:       'MINATO — Analyse performances hebdo (dimanche 06h00)',
+    trigger:    scheduleTrigger(6, 0),
+    taskType:   'optimization',
+    taskInput:  { action: 'analyze_performance', period: 'week' },
+    slackUrl:   SLACK.general,
+    agentLabel: 'MINATO / Analyse hebdo',
+  }),
+
+  buildWorkflow({
+    name:       'MINATO — Optimisation mensuelle prompts (1er du mois 05h00)',
+    trigger:    scheduleTrigger(5, 0),
+    taskType:   'optimization',
+    taskInput:  { action: 'get_recommendations', period: 'month' },
+    slackUrl:   SLACK.general,
+    agentLabel: 'MINATO / Optimisation mensuelle',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
