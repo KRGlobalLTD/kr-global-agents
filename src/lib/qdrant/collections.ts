@@ -25,16 +25,21 @@ interface CollectionGetResponse {
 }
 
 export async function ensureCollection(name: CollectionName): Promise<void> {
-  await qdrant('PUT', `/collections/${name}`, {
-    vectors: {
-      size:     VECTOR_DIM,
-      distance: 'Cosine',
-    },
-    optimizers_config: {
-      default_segment_number: 2,
-    },
-    replication_factor: 1,
-  });
+  try {
+    await qdrant('PUT', `/collections/${name}`, {
+      vectors: {
+        size:     VECTOR_DIM,
+        distance: 'Cosine',
+      },
+      optimizers_config: {
+        default_segment_number: 2,
+      },
+      replication_factor: 1,
+    });
+  } catch (err) {
+    // 409 = collection already exists — idempotent, not an error
+    if (!(err instanceof Error) || !err.message.includes('409')) throw err;
+  }
 }
 
 export async function collectionExists(name: CollectionName): Promise<boolean> {
