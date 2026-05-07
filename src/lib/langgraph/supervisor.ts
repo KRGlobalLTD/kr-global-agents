@@ -16,6 +16,7 @@ import { robinNode }       from './agents/robin';
 import { chopperNode }     from './agents/chopper';
 import { brookNode }       from './agents/brook';
 import { minatoNode }      from './agents/minato';
+import { nejiNode }        from './agents/neji';
 
 // ── Routing ───────────────────────────────────────────────────────────────────
 
@@ -34,6 +35,7 @@ const TASK_AGENT: Record<TaskType, string> = {
   support:        'chopper',
   knowledge:      'brook',
   optimization:   'minato',
+  analytics:      'neji',
 };
 
 // ── Supervisor node ───────────────────────────────────────────────────────────
@@ -85,6 +87,7 @@ const graph = new StateGraph(KRGlobalState)
   .addNode('chopper',     chopperNode)
   .addNode('brook',       brookNode)
   .addNode('minato',      minatoNode)
+  .addNode('neji',        nejiNode)
   .addEdge(START, 'supervisor')
   .addConditionalEdges('supervisor', selectAgent, {
     zoro:      'zoro',
@@ -101,6 +104,7 @@ const graph = new StateGraph(KRGlobalState)
     chopper:     'chopper',
     brook:       'brook',
     minato:      'minato',
+    neji:        'neji',
   })
   .addEdge('zoro',      END)
   .addEdge('nami',      END)
@@ -115,7 +119,8 @@ const graph = new StateGraph(KRGlobalState)
   .addEdge('robin',      END)
   .addEdge('chopper',    END)
   .addEdge('brook',      END)
-  .addEdge('minato',     END);
+  .addEdge('minato',     END)
+  .addEdge('neji',       END);
 
 export const hashirama = graph.compile();
 

@@ -439,6 +439,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.general,
     agentLabel: 'MINATO / Optimisation mensuelle',
   }),
+
+  buildWorkflow({
+    name:       'NEJI — Rapport analytics hebdo (lundi 07h00)',
+    trigger:    scheduleTrigger(7, 0),
+    taskType:   'analytics',
+    taskInput:  { action: 'generate_report', period: 'week' },
+    slackUrl:   SLACK.general,
+    agentLabel: 'NEJI / Rapport Analytics hebdo',
+  }),
+
+  buildWorkflow({
+    name:       'NEJI — Dashboard mensuel (1er du mois 08h00)',
+    trigger:    scheduleTrigger(8, 0),
+    taskType:   'analytics',
+    taskInput:  { action: 'get_dashboard', period: 'month' },
+    slackUrl:   SLACK.general,
+    agentLabel: 'NEJI / Dashboard mensuel',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
