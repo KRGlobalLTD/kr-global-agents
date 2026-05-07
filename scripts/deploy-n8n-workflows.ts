@@ -547,6 +547,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.prospects,
     agentLabel: 'SHIKAMARU / Devis expirés',
   }),
+
+  // ── KAKASHI — Client Success ───────────────────────────────────────────────
+  buildWorkflow({
+    name:       'KAKASHI — Scoring santé clients (lundi 10h00)',
+    trigger:    scheduleTrigger(10, 0),
+    taskType:   'client_success',
+    taskInput:  { action: 'score_all' },
+    slackUrl:   SLACK.alertes,
+    agentLabel: 'KAKASHI / Scoring clients',
+  }),
+  buildWorkflow({
+    name:       'KAKASHI — Check-ins proactifs (mercredi 09h00)',
+    trigger:    scheduleTrigger(9, 0),
+    taskType:   'client_success',
+    taskInput:  { action: 'send_due_checkins' },
+    slackUrl:   SLACK.general,
+    agentLabel: 'KAKASHI / Check-ins',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
