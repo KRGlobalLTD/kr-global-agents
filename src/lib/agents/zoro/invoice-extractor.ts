@@ -100,22 +100,6 @@ function detectProvider(text: string): { name: string; category: string } | null
   return null;
 }
 
-export async function debugExtractRaw(text: string): Promise<{ hasSignal: boolean; raw: string; parsed: unknown }> {
-  const hasSignal = [
-    'invoice', 'receipt', 'billing', 'payment', 'amount', 'total', 'subscription',
-    '$', '£', '€', 'usd', 'gbp', 'eur', 'charged', 'due',
-  ].some(kw => text.toLowerCase().includes(kw));
-
-  let raw    = '(finance signal not detected)';
-  let parsed: unknown = null;
-
-  if (hasSignal) {
-    raw = await extractionChain.invoke({ text: text.slice(0, 8000) });
-    try { parsed = JSON.parse(extractJsonFromText(raw)); } catch { parsed = { parseError: true }; }
-  }
-
-  return { hasSignal, raw, parsed };
-}
 
 export async function extractInvoiceFromText(text: string): Promise<ExtractedInvoice | null> {
   const hasFinanceSignal = [

@@ -13,7 +13,7 @@ import { checkDeadlines, getUpcomingDeadlines }            from '@/lib/agents/zo
 
 // ── New finance-ops modules ───────────────────────────────────────────────────
 import { runEmailMonitor }                              from '@/lib/agents/zoro/email-monitor';
-import { extractInvoiceFromText, debugExtractRaw }      from '@/lib/agents/zoro/invoice-extractor';
+import { extractInvoiceFromText }                        from '@/lib/agents/zoro/invoice-extractor';
 import { getProviders, getTopProvidersBySpend }         from '@/lib/agents/zoro/provider-registry';
 import { upsertSubscription, getActiveSubscriptions,
          checkUpcomingRenewals, cancelSubscription,
@@ -141,13 +141,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         if (!text) return NextResponse.json({ error: 'text requis' }, { status: 400 });
         const extracted = await extractInvoiceFromText(text);
         return NextResponse.json({ agent_name: 'ZORO', extracted });
-      }
-
-      case 'debug_extract': {
-        const text = body['text'] as string | undefined;
-        if (!text) return NextResponse.json({ error: 'text requis' }, { status: 400 });
-        const debug = await debugExtractRaw(text);
-        return NextResponse.json({ agent_name: 'ZORO', debug });
       }
 
       // ── Provider management ───────────────────────────────────────────────
