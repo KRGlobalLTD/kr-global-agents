@@ -1,11 +1,12 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AgentCard }    from './components/AgentCard';
-import { MetricsBar }   from './components/MetricsBar';
-import { ActivityFeed } from './components/ActivityFeed';
-import { QdrantStatus } from './components/QdrantStatus';
-import { N8nStatus }    from './components/N8nStatus';
+import { AgentCard }        from './components/AgentCard';
+import { MetricsBar }       from './components/MetricsBar';
+import { ActivityFeed }     from './components/ActivityFeed';
+import { QdrantStatus }     from './components/QdrantStatus';
+import { N8nStatus }        from './components/N8nStatus';
+import { OrchestrationMap } from './components/OrchestrationMap';
 import type { DashboardStats } from '@/app/api/dashboard/stats/route';
 
 const REFRESH_INTERVAL = 30_000;
@@ -170,6 +171,32 @@ export default function DashboardPage() {
                   ))}
               </div>
             )}
+          </section>
+
+          {/* ── Orchestration ── */}
+          <section id="orchestration">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+                  Orchestration
+                </h2>
+                <p className="text-[10px] text-slate-600 mt-0.5">
+                  Architecture complète — cliquer sur un agent pour les détails
+                </p>
+              </div>
+              <span
+                className="text-[10px] px-2 py-1 rounded-md font-mono"
+                style={{ background: 'rgba(124,58,237,0.1)', color: '#a78bfa', border: '1px solid rgba(124,58,237,0.2)' }}
+              >
+                {Object.values(stats.agents).filter(a => a.status === 'active').length} actifs / 11 agents
+              </span>
+            </div>
+            <div
+              className="rounded-2xl border p-5"
+              style={{ borderColor: 'rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.015)' }}
+            >
+              <OrchestrationMap agents={stats.agents} />
+            </div>
           </section>
 
           {/* ── Activity + Qdrant + n8n ── */}

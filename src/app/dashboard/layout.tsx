@@ -8,12 +8,13 @@ export const metadata: Metadata = {
 };
 
 const NAV_ITEMS = [
-  { label: 'Vue globale',  href: '/dashboard',             emoji: '🏠' },
-  { label: 'Agents',       href: '/dashboard#agents',       emoji: '🤖' },
-  { label: 'Activité',     href: '/dashboard#activity',     emoji: '⚡' },
-  { label: 'Mémoire',      href: '/dashboard#qdrant',       emoji: '🧠' },
-  { label: 'Workflows',    href: '/dashboard#n8n',          emoji: '🔁' },
-  { label: 'Chat',         href: '/dashboard/chat',         emoji: '💬' },
+  { label: 'Vue globale',    href: '/dashboard',                  emoji: '🏠' },
+  { label: 'Agents',         href: '/dashboard#agents',            emoji: '🤖' },
+  { label: 'Orchestration',  href: '/dashboard#orchestration',     emoji: '🕸️' },
+  { label: 'Activité',       href: '/dashboard#activity',          emoji: '⚡' },
+  { label: 'Mémoire',        href: '/dashboard#qdrant',            emoji: '🧠' },
+  { label: 'Workflows',      href: '/dashboard#n8n',               emoji: '🔁' },
+  { label: 'Chat',           href: '/dashboard/chat',              emoji: '💬' },
 ];
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
