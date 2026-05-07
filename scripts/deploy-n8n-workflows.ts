@@ -475,6 +475,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.prospects,
     agentLabel: 'GAARA / Secteur BPO',
   }),
+
+  buildWorkflow({
+    name:       'SAKURA — Veille marché France (mardi 09h00)',
+    trigger:    scheduleTrigger(9, 0),
+    taskType:   'france',
+    taskInput:  { action: 'research_market', sector: 'tech_esn' },
+    slackUrl:   SLACK.prospects,
+    agentLabel: 'SAKURA / Veille France',
+  }),
+
+  buildWorkflow({
+    name:       'SAKURA — Analyse secteur Finance France (jeudi 10h00)',
+    trigger:    scheduleTrigger(10, 0),
+    taskType:   'france',
+    taskInput:  { action: 'analyze_sector', secteur: 'finance' },
+    slackUrl:   SLACK.prospects,
+    agentLabel: 'SAKURA / Secteur Finance FR',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
