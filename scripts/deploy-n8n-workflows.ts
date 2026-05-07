@@ -583,6 +583,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.revenus,
     agentLabel: 'JIRAIYA / Campagne upsell',
   }),
+
+  // ── SASUKE — Vertical SaaS ────────────────────────────────────────────────
+  buildWorkflow({
+    name:       'SASUKE — Prospecting SaaS quotidien (09h30)',
+    trigger:    scheduleTrigger(9, 30),
+    taskType:   'saas',
+    taskInput:  { action: 'run_campaign' },
+    slackUrl:   SLACK.prospects,
+    agentLabel: 'SASUKE / Prospecting SaaS',
+  }),
+  buildWorkflow({
+    name:       'SASUKE — Contenu SaaS hebdo (mardi 08h00)',
+    trigger:    scheduleTrigger(8, 0),
+    taskType:   'saas',
+    taskInput:  { action: 'content_batch', count: 3 },
+    slackUrl:   SLACK.contenu,
+    agentLabel: 'SASUKE / Contenu SaaS',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
