@@ -655,6 +655,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.contenu,
     agentLabel: 'HINATA / Contenu EdTech',
   }),
+
+  // ── KIBA — Partenaires & Réseau Revendeurs ────────────────────────────────
+  buildWorkflow({
+    name:       'KIBA — Prospecting partenaires hebdo (lundi 12h00)',
+    trigger:    scheduleTrigger(12, 0),
+    taskType:   'partners',
+    taskInput:  { action: 'run_campaign' },
+    slackUrl:   SLACK.prospects,
+    agentLabel: 'KIBA / Prospecting Partenaires',
+  }),
+  buildWorkflow({
+    name:       'KIBA — Stats pipeline partenaires (vendredi 17h00)',
+    trigger:    scheduleTrigger(17, 0),
+    taskType:   'partners',
+    taskInput:  { action: 'get_stats' },
+    slackUrl:   SLACK.general,
+    agentLabel: 'KIBA / Stats Pipeline',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
