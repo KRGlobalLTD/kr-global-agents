@@ -691,6 +691,24 @@ const WORKFLOWS: N8nWorkflowPayload[] = [
     slackUrl:   SLACK.revenus,
     agentLabel: 'KABUTO / Rapports Mensuels',
   }),
+
+  // ── MADARA — Reporting Exécutif ───────────────────────────────────────────
+  buildWorkflow({
+    name:       'MADARA — Rapport exécutif mensuel (1er du mois 07h00)',
+    trigger:    scheduleTrigger(7, 0),
+    taskType:   'erp',
+    taskInput:  { action: 'generate_report' },
+    slackUrl:   SLACK.general,
+    agentLabel: 'MADARA / Rapport Exécutif',
+  }),
+  buildWorkflow({
+    name:       'MADARA — Dashboard hebdomadaire (lundi 08h00)',
+    trigger:    scheduleTrigger(8, 0),
+    taskType:   'erp',
+    taskInput:  { action: 'get_dashboard' },
+    slackUrl:   SLACK.general,
+    agentLabel: 'MADARA / Dashboard Hebdo',
+  }),
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
