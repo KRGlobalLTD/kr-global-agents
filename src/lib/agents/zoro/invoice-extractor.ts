@@ -1,10 +1,7 @@
-// AI-powered invoice data extraction using OpenRouter
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+// AI-powered invoice data extraction — uses the shared LangChain LLM stack
+import { ChatPromptTemplate }  from '@langchain/core/prompts';
+import { StringOutputParser }  from '@langchain/core/output_parsers';
+import { getLLM }              from '@/lib/langchain/llm';
 
 const PROVIDER_PATTERNS: Record<string, { category: string; normalized: string }> = {
   'openai':       { category: 'AI',             normalized: 'OpenAI'        },
@@ -43,31 +40,31 @@ const PROVIDER_PATTERNS: Record<string, { category: string; normalized: string }
 };
 
 export interface ExtractedInvoice {
-  provider_name:    string;
-  invoice_number:   string | null;
-  amount:           number;
-  currency:         string;
-  invoice_date:     string;   // YYYY-MM-DD
-  due_date:         string | null;
-  is_recurring:     boolean;
-  billing_frequency: string;  // monthly | annual | quarterly | one-time
-  payment_method:   string | null;
-  vat_amount:       number | null;
-  category:         string;
+  provider_name:     string;
+  invoice_number:    string | null;
+  amount:            number;
+  currency:          string;
+  invoice_date:      string;
+  due_date:          string | null;
+  is_recurring:      boolean;
+  billing_frequency: string;
+  payment_method:    string | null;
+  vat_amount:        number | null;
+  category:          string;
 }
 
-const EXTRACTION_PROMPT = `You are a financial document parser for KR Global Solutions Ltd.
-Extract invoice/receipt/billing data from the text below.
+const SYSTEM_PROMPT = `You are a financial document parser for KR Global Solutions Ltd.
+Extract invoice/receipt/billing data from the user message.
 
 RULES:
-- ALWAYS return a JSON object — never return null, never return plain text
-- If some fields are unclear, make your best guess based on context
-- Only return {"provider_name": null} if the text has ZERO financial content (e.g. a recipe or news article)
-- Amounts must be positive numbers (strip currency symbols)
+- ALWAYS return a JSON object — NEVER return null or plain text
+- If some fields are unclear, make your best guess
+- Only return {"provider_name": null} if the text has ZERO financial content (a recipe, sports article, etc.)
+- Amounts must be positive numbers (no currency symbols)
 - Dates must be YYYY-MM-DD format (use today if unclear)
-- Category must be one of: AI, Infrastructure, Domains, SaaS, Banking, Marketing, Operations, Taxes, Other
+- Category: AI, Infrastructure, Domains, SaaS, Banking, Marketing, Operations, Taxes, Other
 
-Return ONLY this JSON (no markdown, no explanation):
+Return ONLY valid JSON — no markdown, no explanation:
 {
   "provider_name": "company name",
   "invoice_number": "INV-XXX or null",
@@ -82,44 +79,25 @@ Return ONLY this JSON (no markdown, no explanation):
   "category": "AI"
 }`;
 
-function detectProviderFromText(text: string): { name: string; category: string } | null {
+const extractionChain = ChatPromptTemplate.fromMessages([
+  ['system', SYSTEM_PROMPT],
+  ['human', '{text}'],
+]).pipe(getLLM(true)).pipe(new StringOutputParser());
+
+function extractJsonFromText(raw: string): string {
+  const stripped = raw.replace(/```(?:json)?\s*/gi, '').replace(/```\s*/g, '').trim();
+  const start    = stripped.indexOf('{');
+  const end      = stripped.lastIndexOf('}');
+  if (start !== -1 && end > start) return stripped.slice(start, end + 1);
+  return stripped;
+}
+
+function detectProvider(text: string): { name: string; category: string } | null {
   const lower = text.toLowerCase();
   for (const [key, info] of Object.entries(PROVIDER_PATTERNS)) {
     if (lower.includes(key)) return { name: info.normalized, category: info.category };
   }
   return null;
-}
-
-async function callOpenRouter(prompt: string, text: string): Promise<string> {
-  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      Authorization:  `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: process.env.OPENROUTER_MODEL ?? 'google/gemini-2.0-flash-001',
-      messages: [
-        { role: 'system', content: prompt },
-        { role: 'user',   content: text.slice(0, 8000) },
-      ],
-      temperature: 0,
-    }),
-  });
-
-  if (!res.ok) throw new Error(`OpenRouter extraction ${res.status}`);
-  const data = (await res.json()) as { choices: Array<{ message: { content: string } }> };
-  return data.choices[0]?.message.content ?? 'null';
-}
-
-function extractJsonFromText(raw: string): string {
-  // Strip markdown code fences if present
-  const stripped = raw.replace(/```(?:json)?\s*/gi, '').replace(/```\s*/g, '').trim();
-  // Find first { ... } block
-  const start = stripped.indexOf('{');
-  const end   = stripped.lastIndexOf('}');
-  if (start !== -1 && end > start) return stripped.slice(start, end + 1);
-  return stripped;
 }
 
 export async function debugExtractRaw(text: string): Promise<{ hasSignal: boolean; raw: string; parsed: unknown }> {
@@ -128,13 +106,12 @@ export async function debugExtractRaw(text: string): Promise<{ hasSignal: boolea
     '$', '£', '€', 'usd', 'gbp', 'eur', 'charged', 'due',
   ].some(kw => text.toLowerCase().includes(kw));
 
-  let raw = '(not called)';
+  let raw    = '(finance signal not detected)';
   let parsed: unknown = null;
 
   if (hasSignal) {
-    raw    = await callOpenRouter(EXTRACTION_PROMPT, text);
-    const jsonStr = extractJsonFromText(raw);
-    try { parsed = JSON.parse(jsonStr); } catch { parsed = { parseError: true, jsonStr }; }
+    raw = await extractionChain.invoke({ text: text.slice(0, 8000) });
+    try { parsed = JSON.parse(extractJsonFromText(raw)); } catch { parsed = { parseError: true }; }
   }
 
   return { hasSignal, raw, parsed };
@@ -150,14 +127,10 @@ export async function extractInvoiceFromText(text: string): Promise<ExtractedInv
 
   let raw: string;
   try {
-    raw = await callOpenRouter(EXTRACTION_PROMPT, text);
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    void supabase.from('alerts').insert({ agent_name: 'ZORO', level: 'WARNING', message: `Invoice extraction LLM error: ${msg.slice(0, 200)}` });
+    raw = await extractionChain.invoke({ text: text.slice(0, 8000) });
+  } catch {
     return null;
   }
-
-  void supabase.from('alerts').insert({ agent_name: 'ZORO', level: 'INFO', message: `Invoice extraction raw: ${raw.slice(0, 300)}` });
 
   let parsed: ExtractedInvoice | null;
   try {
@@ -166,32 +139,25 @@ export async function extractInvoiceFromText(text: string): Promise<ExtractedInv
     return null;
   }
 
-  if (!parsed || !parsed.provider_name || !parsed.amount || parsed.amount <= 0) return null;
+  if (!parsed || !parsed.provider_name || parsed.provider_name === 'null') return null;
+  if (!parsed.amount || parsed.amount <= 0) return null;
 
-  // Normalize provider name using pattern matching
-  const detected = detectProviderFromText(parsed.provider_name + ' ' + text.slice(0, 500));
-  if (detected) {
-    if (parsed.provider_name.length < detected.name.length || parsed.category === 'Other') {
-      parsed.provider_name = detected.name;
-      parsed.category      = detected.category;
-    }
+  // Normalize using pattern matching
+  const detected = detectProvider(parsed.provider_name + ' ' + text.slice(0, 500));
+  if (detected && parsed.category === 'Other') {
+    parsed.provider_name = detected.name;
+    parsed.category      = detected.category;
   }
 
-  // Validate/normalize currency
-  parsed.currency = (parsed.currency ?? 'USD').toUpperCase();
-  if (!['USD', 'GBP', 'EUR', 'CAD', 'AUD'].includes(parsed.currency)) {
-    parsed.currency = 'USD';
-  }
-
-  // Normalize date
+  parsed.currency          = (parsed.currency ?? 'USD').toUpperCase();
+  if (!['USD','GBP','EUR','CAD','AUD','MAD'].includes(parsed.currency)) parsed.currency = 'USD';
   if (!parsed.invoice_date || !/^\d{4}-\d{2}-\d{2}$/.test(parsed.invoice_date)) {
     parsed.invoice_date = new Date().toISOString().split('T')[0];
   }
-
-  parsed.is_recurring     = parsed.is_recurring ?? false;
+  parsed.is_recurring     = parsed.is_recurring     ?? false;
   parsed.billing_frequency = parsed.billing_frequency ?? 'monthly';
-  parsed.vat_amount       = parsed.vat_amount ?? null;
-  parsed.category         = parsed.category ?? 'Other';
+  parsed.vat_amount       = parsed.vat_amount       ?? null;
+  parsed.category         = parsed.category         ?? 'Other';
 
   return parsed;
 }
